@@ -20,6 +20,8 @@ public interface Constants{
     public static final String IWAD_FOLDER_CONFIG="iwad.cfg";
     public static final String PWAD_FOLDER_CONFIG="wad.cfg";
     public static final String ENGINE_FOLDER_CONFIG="engine.cfg";
+    
+    public static final String[] SKILLS={"I'm too young to die","Hey, not too rough","Hurt me plenty","Ultra-Violence","Nightmare!"};
 
     
     
@@ -28,7 +30,7 @@ public interface Constants{
     public static final int FILE_CHOOSE_ENGINE=3;
     
     
-    
+    public static final int DMFLAGS_NUM=3;
     
     
     

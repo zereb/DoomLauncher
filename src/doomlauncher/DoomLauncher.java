@@ -26,8 +26,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 /**
  *
@@ -50,6 +53,7 @@ public class DoomLauncher  implements Observer,Constants{
     JTabbedPane jTabbedPane;
     JTextArea customParamJTtextArea;
 
+    Misc misc=new Misc();
     String[] engines=ENGINE;
     
     FileChoose fileChoose;
@@ -74,6 +78,9 @@ public class DoomLauncher  implements Observer,Constants{
         engines[0]=files.engineName;
         
         
+      
+
+
         frame=new JFrame("Doom Launcher");
         frame.setMinimumSize(new Dimension(WIDTH, HEIGHT));
         frame.setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -263,6 +270,7 @@ public class DoomLauncher  implements Observer,Constants{
         jTabbedPane=new JTabbedPane();
         jTabbedPane.addTab("General", bigJPanel);
         jTabbedPane.addTab("Custom Parametres", customParamJPanel);
+        jTabbedPane.addTab("Misc", misc.miscJPanel);
         
         
         
@@ -277,7 +285,8 @@ public class DoomLauncher  implements Observer,Constants{
    
    
    private void initLaunch() {
-       String customParam=customParamJTtextArea.getText();
+       misc.changes();
+       String customParam=customParamJTtextArea.getText()+" "+misc.miscParam;
        System.out.println(customParam.length());
        if(customParam.length()>0){
             customParametersArg = customParam.split(" ");
@@ -365,13 +374,109 @@ public class DoomLauncher  implements Observer,Constants{
     }
     
     public static void main(String[] args) {
-        
+          try {
+            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+               
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+    // If Nimbus is not available, you can set the GUI to another look and feel.
+        }
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 new DoomLauncher();
             }
         });
         
+    }
+
+    private static class Misc {
+        JPanel miscJPanel;
+        
+        JComboBox skillJComboBox;
+        JTextField mapJTextField;
+        JTextField[] dmFlagJTextFields=new JTextField[DMFLAGS_NUM];
+        
+        
+        String miscParam;
+        String[] miscArgs=new String[2];
+        int[] dmFlags=new int[DMFLAGS_NUM];
+        
+        
+        public Misc() {
+            init();
+            
+            miscJPanel = new  JPanel();
+            JLabel skillJLabel=new JLabel("Skill: ");
+            skillJComboBox = new JComboBox(SKILLS);
+            
+            JLabel mapJLabel=new JLabel("Map: ");
+            mapJTextField = new JTextField(15);
+            
+            JPanel jPanel=new JPanel();
+            
+            JTabbedPane jTabbedPane=new JTabbedPane();
+            jTabbedPane.addTab("Flags", jPanel);
+            
+            JLabel[] dmFlagsJLabels=new JLabel[DMFLAGS_NUM];
+            for (int i = 0; i < dmFlags.length; i++) {
+                dmFlagsJLabels[i]=new JLabel("DMFlag"+i);
+                dmFlagJTextFields[i]=new JTextField(10);
+            }
+            
+            miscJPanel.setLayout(new BorderLayout());
+                JPanel northJPanel=new JPanel();
+                northJPanel.add(skillJLabel);
+                northJPanel.add(skillJComboBox);
+
+                northJPanel.add(mapJLabel);
+                northJPanel.add(mapJTextField);
+                
+                
+                JPanel southPanel=new JPanel();
+                for (int i = 0; i < DMFLAGS_NUM; i++) {
+                    southPanel.add(dmFlagsJLabels[i]);
+                    southPanel.add(dmFlagJTextFields[i]);
+                    
+                }
+                
+            miscJPanel.add(northJPanel, BorderLayout.NORTH);    
+            miscJPanel.add(jTabbedPane, BorderLayout.CENTER);
+            miscJPanel.add(southPanel, BorderLayout.SOUTH);
+            
+            
+         
+           
+            
+        }
+        
+        public void init(){
+            for (int i = 0; i < dmFlags.length; i++) {
+                dmFlags[i]=0;
+            }
+            
+            miscParam=new String();
+            for(int i=0; i<miscArgs.length; i++){
+                miscArgs[i]=" ";
+            }
+        
+        }
+        
+        public void changes(){
+            init();
+            
+            miscArgs[0]="-skill "+(skillJComboBox.getSelectedIndex()+1);
+            if(mapJTextField.getText().length()>0)
+                miscArgs[1]="+map "+mapJTextField.getText();
+            
+            
+            for (int i = 0; i < miscArgs.length; i++) {
+                miscParam+=" "+miscArgs[i];
+            }
+        }
     }
 
 
