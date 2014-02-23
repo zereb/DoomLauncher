@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  *
@@ -49,42 +50,54 @@ public class Files implements Constants{
             setConfig("/", PWAD_FOLDER_CONFIG,0);
         }
         if (new File(ENGINE_FOLDER_CONFIG).exists()){
-            try {
-                    String config1String=readConfig(ENGINE_FOLDER_CONFIG, 1);
-                    int config1=Integer.parseInt(config1String);
-                    engine=new File[config1];
-                    int stringId=2;
-                    System.out.println("Reading config: "+ENGINE_FOLDER_CONFIG);
-                    for (int i = 0; i < config1 ; i++) {
-                        engine[i] = new File(readConfig(ENGINE_FOLDER_CONFIG, stringId));
-                        stringId++;
-                    }
-                    System.out.println("Done: "+ENGINE_FOLDER_CONFIG);
-               
-            } catch (NumberFormatException e) {
-                System.out.println("Error with parse first string in conf "+ENGINE_FOLDER_CONFIG);
-                System.out.println("Creating new defult "+ENGINE_FOLDER_CONFIG);
-                writeConfig(ENGINE_FOLDER_CONFIG, ENGINE);
-            }
+           
         }else{
              System.out.println(ENGINE_FOLDER_CONFIG+" Not exist");
              System.out.println("Creating new defult "+ENGINE_FOLDER_CONFIG);
              writeConfig(ENGINE_FOLDER_CONFIG, ENGINE);
         }
             
-       
+      
         
+        initEngine();
         initIWADS();
         initPWADS();
      }
     
-    
-    public void setEngine(String path, int id){
-       
-        engine[id]=new File(path);
-        engineName[id]=engine[id].getName();
+    public void updateEngines(){
+        engineName=new String[engine.length];
+            for (int i = 0; i < engine.length; i++) {
+                engineName[i]=engine[i].getName();
+            }
     }
     
+      public void initEngine() {
+        try {
+            String config1String = readConfig(ENGINE_FOLDER_CONFIG, 1);
+            int config1 = Integer.parseInt(config1String);
+            engine = new File[config1];
+            int stringId = 2;
+            System.out.println("Reading config: " + ENGINE_FOLDER_CONFIG);
+            for (int i = 0; i < config1; i++) {
+                engine[i] = new File(readConfig(ENGINE_FOLDER_CONFIG, stringId));
+                stringId++;
+            }
+            System.out.println("Done: " + ENGINE_FOLDER_CONFIG);
+            engineName=new String[engine.length];
+            for (int i = 0; i < engine.length; i++) {
+                engineName[i]=engine[i].getName();
+            }
+
+        } catch (NumberFormatException e) {
+            System.out.println("Error with parse first string in conf " + ENGINE_FOLDER_CONFIG);
+            System.out.println("Creating new defult " + ENGINE_FOLDER_CONFIG);
+            writeConfig(ENGINE_FOLDER_CONFIG, ENGINE);
+            initEngine();
+            
+        }
+
+    }
+
     public boolean writeConfig(String confName, String[] strings){
         File conf=new File(confName);
         try {
@@ -101,6 +114,13 @@ public class Files implements Constants{
         }
         return true;
     }
+    public boolean writeConfig(String confName, File[] files){
+        String[] strings=new String[files.length];
+        for (int i = 0; i < strings.length; i++) {
+            strings[i]=files[i].getAbsolutePath();
+        }
+        return writeConfig(confName, strings);
+    }
     
     
     public String readConfig(String confName, Integer stringNum){
@@ -115,7 +135,7 @@ public class Files implements Constants{
                         return buff;
                 }
             } catch (IOException ex) {
-                
+                System.out.println("Error read config "+ex);
             }
         } catch (FileNotFoundException ex) {
             System.out.println("Error read config "+ex);
@@ -151,13 +171,34 @@ public class Files implements Constants{
     }
     
     public void addEngine(String path){
-        int engines=engine.length;
-        setConfig(path, ENGINE_FOLDER_CONFIG, engines+1);
-        engine=new File[engines+1];
-        engineName=new String[engines+1];
-            for (int i = 0; i < engine.length; i++) {
-               setEngine(readIWADConfig(ENGINE_FOLDER_CONFIG,i,2),i);
-            }
+        int engines=engine.length+1;
+        File[] buff=engine; 
+        engine=new File[engines];
+        for (int i = 0; i < buff.length; i++) {
+           engine[i]=buff[i];
+        }
+        engine[engines-1]=new File(path);
+        updateEngines();
+        if(writeConfig(ENGINE_FOLDER_CONFIG, engine)){
+            System.out.println("Sucesfully added engine: "+path);
+           
+        }else{
+             System.out.println("Can't add engine: "+path);
+        }
+        
+        
+    }
+    
+     public void changeEngine(int id, String path){
+        engine[id]=new File(path);
+        engineName[id]=engine[id].getName();
+        if(writeConfig(ENGINE_FOLDER_CONFIG, engine)){
+            System.out.println("Sucesfully changed engine: "+path);
+           
+        }else{
+             System.out.println("Can't change engine: "+path);
+        }
+        
         
     }
     
@@ -192,7 +233,7 @@ public class Files implements Constants{
         int iwadID=0;
         for (int i = 0; i < IWAD_NAMES.length; i++) {
             for (int j = 0; j < allFiles.length; j++) {
-                if(IWAD_NAMES[i].equals(allFiles[j].getName())){
+                if(IWAD_NAMES[i].equals(allFiles[j].getName().toLowerCase())){
                     iwadCount++;
                 }
             }
@@ -202,10 +243,10 @@ public class Files implements Constants{
             iwadsNames = new String[iwads.length];
             for (int i = 0; i < IWAD_NAMES.length; i++) {
                 for (int j = 0; j < allFiles.length; j++) {
-                    if (IWAD_NAMES[i].equals(allFiles[j].getName())) {
+                    if (IWAD_NAMES[i].equals(allFiles[j].getName().toLowerCase())) {
                         
                         iwads[iwadID] = allFiles[j];
-                        iwadsNames[iwadID] = iwads[iwadID].getName();
+                        iwadsNames[iwadID] = iwads[iwadID].getName().toLowerCase();
                         iwadID++;
                     }
 

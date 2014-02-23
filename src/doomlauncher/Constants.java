@@ -31,6 +31,7 @@ public interface Constants{
     public static final int FILE_CHOOSE_IWAD=1;
     public static final int FILE_CHOOSE_PWAD=2;
     public static final int FILE_CHOOSE_ENGINE=3;
+    public static final int FILE_ADD_ENGINE=4;
     
     
     public static final int DMFLAGS_NUM=3;
@@ -51,7 +52,11 @@ public interface Constants{
     
     public static String[] ENGINE={"zandronum"};
     public static final String[] IWAD_NAMES={
-        "DOOM.WAD","DOOM2.WAD","HERETIC.WAD","HEXEN.WAD","STRIFE1.WAD"};
+        "doom1.wad","freedoom1.wad","doom2.wad","tnt.wad","plutonia.wad",
+         "freedm.wad","freedm.wad","freedoom2.wad","doom2f.wad","heretic1.wad","heretic.wad","hexen.wad",
+         "hexdd.wad","strife0.wad","strife1.wad","chex.wad","chex3.wad","action2.wad","harm1.wad","hacx.wad","hacx2.wad",
+         "strife.wad","hexendemo.wad","hexdemo.wad","blasphem.wad","blasphemer.wad","doom2bfg.wad","bfgdoom.wad","doomu.wad"
+    };
     
    public static final String[] DMFLAGS_NAMES={
        "","","","Fast monstres","Allow jump","Allow crouch"};

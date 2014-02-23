@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Observable;
+import java.util.logging.Logger;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.*;
 
 /**
  *
@@ -19,6 +22,7 @@ import java.util.Observable;
 public class ProcessBuilderD extends Observable implements Runnable{
     private String outEXELine;
     private String outEXE=new String();
+
     
     BufferedReader bufferedReader;
     InputStream inputStream;
@@ -85,16 +89,15 @@ public class ProcessBuilderD extends Observable implements Runnable{
     public void run() {
         try {
             
-            
+           
             while ((outEXELine = bufferedReader.readLine()+"\n") != null && exitValue()==1) {
                if (exitValue()==0) {
                     closeProcess();
                     break;
                 }else{  
                 
-                outEXE=outEXE.concat(outEXELine); 
-                stateChanged();
-                
+                outEXE=outEXE.concat(outEXELine);
+    
                 }
                 try {
                     Thread.sleep(1);

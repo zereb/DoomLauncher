@@ -16,6 +16,8 @@ import java.io.File;
 import java.text.NumberFormat;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -35,6 +37,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -81,7 +84,7 @@ public class DoomLauncher  implements Observer,Constants{
     
     public  DoomLauncher(){
         files=new Files();
-        engines[0]=files.engineName;
+        engines=files.engineName;
         
         
       
@@ -119,11 +122,26 @@ public class DoomLauncher  implements Observer,Constants{
          JButton jButtonEngine=new JButton("...");
         jButtonEngine.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-               
-                fileChoose=new FileChoose(files, FILE_CHOOSE_ENGINE);
+                int selected=jComboBoxEngines.getSelectedIndex();
+                fileChoose=new FileChoose(files, FILE_CHOOSE_ENGINE, selected);
                 jComboBoxEngines.removeAllItems();
-                for (int i = 0; i < 1; i++) {
-                     jComboBoxEngines.addItem(files.engineName);
+                for (int i = 0; i < files.engineName.length; i++) {
+                     jComboBoxEngines.addItem(files.engineName[i]);
+                }
+                jComboBoxEngines.setSelectedIndex(selected);
+             
+            }
+
+            
+        });
+        JButton jButtonAddEngine=new JButton("Add new");
+        jButtonAddEngine.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+               
+                fileChoose=new FileChoose(files, FILE_ADD_ENGINE);
+                jComboBoxEngines.removeAllItems();
+                for (int i = 0; i < files.engineName.length; i++) {
+                     jComboBoxEngines.addItem(files.engineName[i]);
                 }
              
             }
@@ -253,6 +271,7 @@ public class DoomLauncher  implements Observer,Constants{
         changeJPanel.add(enginesJLabel);
         changeJPanel.add(jComboBoxEngines);
         changeJPanel.add(jButtonEngine);
+        changeJPanel.add(jButtonAddEngine);
         changeJPanel.add(iwadsJLabel);
         changeJPanel.add(jComboBoxIwads);
         changeJPanel.add(jButtonIwad);
@@ -302,7 +321,7 @@ public class DoomLauncher  implements Observer,Constants{
        }
        
        argsPB=new String[calculateARGSLength()];
-       argsPB[LAUNCH_CMD_ARG_ENGINE]=files.engine.getAbsolutePath();
+       argsPB[LAUNCH_CMD_ARG_ENGINE]=files.engine[jComboBoxEngines.getSelectedIndex()].getAbsolutePath();
        if (files.getIWADCount()>0) {
            argsPB[LAUNCH_CMD_ARG_IWAD]="-iwad";
            argsPB[LAUNCH_CMD_ARG_IWADPATH]=files.iwads[jComboBoxIwads.getSelectedIndex()].getAbsolutePath();
@@ -383,17 +402,20 @@ public class DoomLauncher  implements Observer,Constants{
     }
     
     public static void main(String[] args) {
-          try {
+       try {
             for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-               
+
                 if ("Nimbus".equals(info.getName())) {
                     UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
             }
         } catch (Exception e) {
-    // If Nimbus is not available, you can set the GUI to another look and feel.
+            
         }
+    
+
+    
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 new DoomLauncher();
