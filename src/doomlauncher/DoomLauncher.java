@@ -12,12 +12,14 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.text.NumberFormat;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -269,8 +271,9 @@ public class DoomLauncher  implements Observer,Constants{
         
         jTabbedPane=new JTabbedPane();
         jTabbedPane.addTab("General", bigJPanel);
-        jTabbedPane.addTab("Custom Parametres", customParamJPanel);
         jTabbedPane.addTab("Misc", misc.miscJPanel);
+        jTabbedPane.addTab("Custom Parametres", customParamJPanel);
+        
         
         
         
@@ -393,19 +396,23 @@ public class DoomLauncher  implements Observer,Constants{
         
     }
 
-    private static class Misc {
+    public class Misc {
         JPanel miscJPanel;
         
         JComboBox skillJComboBox;
         JTextField mapJTextField;
         JTextField[] dmFlagJTextFields=new JTextField[DMFLAGS_NUM];
+        JComboBox falingDamageJComboBox;
         
         
         String miscParam;
-        String[] miscArgs=new String[2];
+        String[] miscArgs=new String[256];
         int[] dmFlags=new int[DMFLAGS_NUM];
+        String[] dmFlagsNames=new String[DMFLAGS_NUM];
+        boolean[] dmFlagsOn=new boolean[DMFLAGS_VALUE.length];
+       
         
-        
+     
         public Misc() {
             init();
             
@@ -416,16 +423,60 @@ public class DoomLauncher  implements Observer,Constants{
             JLabel mapJLabel=new JLabel("Map: ");
             mapJTextField = new JTextField(15);
             
-            JPanel jPanel=new JPanel();
+           
             
-            JTabbedPane jTabbedPane=new JTabbedPane();
-            jTabbedPane.addTab("Flags", jPanel);
+            
+            JLabel fallingDamgeJLabel=new JLabel("Falling damage: ");
+            
+            falingDamageJComboBox = new JComboBox(FALLING_DAMAGE);
+            falingDamageJComboBox.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    switch(falingDamageJComboBox.getSelectedIndex()){
+                        case 0: dmFlagsOn[0]=false; dmFlagsOn[1]=false; dmFlagsOn[2]=false;break;
+                        case 1: dmFlagsOn[0]=true; dmFlagsOn[1]=false; dmFlagsOn[2]=false; break;
+                        case 2: dmFlagsOn[1]=true; dmFlagsOn[0]=false; dmFlagsOn[2]=false; break;
+                        case 3: dmFlagsOn[2]=true; dmFlagsOn[0]=false; dmFlagsOn[1]=false; break;
+                    }
+                    calcDmFlags(1);
+                }
+            });
             
             JLabel[] dmFlagsJLabels=new JLabel[DMFLAGS_NUM];
             for (int i = 0; i < dmFlags.length; i++) {
-                dmFlagsJLabels[i]=new JLabel("DMFlag"+i);
+                if (i!=0) {
+                    dmFlagsNames[i]="dmflags"+1;
+                    dmFlagsJLabels[i]=new JLabel("DMFlags"+i);
+                }else{
+                    dmFlagsJLabels[i]=new JLabel("DMFlags");
+                    dmFlagsNames[i]="dmflags";
+                }
+                
                 dmFlagJTextFields[i]=new JTextField(10);
+//                dmFlagJTextFields[i].set
             }
+            
+            
+            DLJCheckBox[] dmFlagsCheckBoxses=new DLJCheckBox[3];
+            int dmFlagCheckBoxId=3;
+            for (int i = 0; i < dmFlagsCheckBoxses.length; i++) {
+                dmFlagsCheckBoxses[i]=new DLJCheckBox(DMFLAGS_NAMES[dmFlagCheckBoxId], this, dmFlagCheckBoxId);
+                dmFlagCheckBoxId++;
+            }
+            
+            
+            
+            JPanel flagsJPanel=new JPanel();
+            flagsJPanel.add(fallingDamgeJLabel);
+            flagsJPanel.add(falingDamageJComboBox);
+            for (int i = 0; i < dmFlagsCheckBoxses.length; i++) {
+                flagsJPanel.add(dmFlagsCheckBoxses[i]);
+            }
+            
+            
+            
+            JTabbedPane jTabbedPane=new JTabbedPane();
+            jTabbedPane.addTab("Flags", flagsJPanel);
+           
             
             miscJPanel.setLayout(new BorderLayout());
                 JPanel northJPanel=new JPanel();
@@ -465,18 +516,49 @@ public class DoomLauncher  implements Observer,Constants{
         
         }
         
+        private void updateDmflags() {
+            for (int i = 0; i < DMFLAGS_NUM; i++) {
+                try {
+                    dmFlags[i]=Integer.parseInt(dmFlagJTextFields[i].getText());
+                } catch (NumberFormatException e) {
+                }
+                
+            }
+        }
+        
+        public void calcDmFlags(int flag){
+            init();
+            Integer buff=0;
+            for (int i = 0; i < DMFLAGS_VALUE.length; i++) {
+                if(dmFlagsOn[i])
+                    buff+=DMFLAGS_VALUE[i];
+                
+            }
+            dmFlagJTextFields[0].setText(buff.toString());
+            
+        }
+        
         public void changes(){
             init();
+            updateDmflags();
             
             miscArgs[0]="-skill "+(skillJComboBox.getSelectedIndex()+1);
             if(mapJTextField.getText().length()>0)
                 miscArgs[1]="+map "+mapJTextField.getText();
+            for (int i = 2; i < DMFLAGS_NUM+2; i++) {
+                int dmflagID=i-2;
+                System.out.println("dmflag"+dmflagID+": "+dmFlags[dmflagID]);
+                if(dmFlags[dmflagID]!=0)
+                    miscArgs[i]="+dmflags "+dmFlags[dmflagID];
+            }
             
             
             for (int i = 0; i < miscArgs.length; i++) {
                 miscParam+=" "+miscArgs[i];
             }
         }
+
+        
     }
 
 
