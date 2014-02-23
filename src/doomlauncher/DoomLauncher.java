@@ -13,6 +13,9 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.text.NumberFormat;
 import java.util.Observable;
 import java.util.Observer;
@@ -40,6 +43,9 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.StyledDocument;
 
 /**
  *
@@ -55,6 +61,7 @@ public class DoomLauncher  implements Observer,Constants{
     
     JFrame frame;
     JTextArea jTextArea;
+    Document document;
     JComboBox<String> jComboBoxEngines;
     JComboBox<String> jComboBoxIwads;
     JList<File> jListPwads;
@@ -240,6 +247,7 @@ public class DoomLauncher  implements Observer,Constants{
         
         //панель вывода 
         jTextArea=new JTextArea();
+        document=jTextArea.getDocument();
         JScrollPane jScrollPane=new JScrollPane(jTextArea);
        
         jTextArea.setEditable(false);
@@ -371,7 +379,12 @@ public class DoomLauncher  implements Observer,Constants{
    }
         
     public void update(Observable o, Object arg) {
-        jTextArea.setText(processBuilderD.getOutEXE());
+        document=jTextArea.getDocument();
+        try {
+            document.insertString(document.getLength(), processBuilderD.getOutEXELine(), null);
+        } catch (BadLocationException ex) {
+          ;
+        }
        
     }
     
@@ -402,6 +415,8 @@ public class DoomLauncher  implements Observer,Constants{
     }
     
     public static void main(String[] args) {
+        
+    
        try {
             for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 
