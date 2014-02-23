@@ -410,6 +410,7 @@ public class DoomLauncher  implements Observer,Constants{
         JTextField[] dmFlagJTextFields=new JTextField[DMFLAGS_NUM];
         JTextField[] compatJTextFields=new JTextField[2];
         public CompatFlags compatFlags;
+        public CompatFlags compatFlags2;
         JComboBox falingDamageJComboBox;
         JCheckBox svCheatsCheckBox;
         JPanel southPanel1;
@@ -426,6 +427,8 @@ public class DoomLauncher  implements Observer,Constants{
         int[] compat=new int[2];
         String[] compatNames=new String[2];
         boolean[] compatOn=new boolean[COMPAT_VALUE.length];
+        boolean[] compat2On=new boolean[COMPAT2_VALUE.length];
+        
         JPanel southPanel;
        
         
@@ -527,11 +530,13 @@ public class DoomLauncher  implements Observer,Constants{
             southPanel=new JPanel();
             southPanel.add(southPanel1);
             
-            compatFlags = new CompatFlags(this);
+            compatFlags = new CompatFlags(this, COMPAT_NAMES, COMPAT_VALUE, COMPAT_DISCRIPTION,0);
+            compatFlags2 = new CompatFlags(this, COMPAT2_NAMES, COMPAT2_VALUE, COMPAT2_DESCRIPTION,1);
             
             jTabbedPane = new JTabbedPane();
             jTabbedPane.addTab("Flags", flagsJPanel);
             jTabbedPane.addTab("compatibility",compatFlags);
+            jTabbedPane.addTab("compatibility2",compatFlags2);
             jTabbedPane.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
                     if(jTabbedPane.getSelectedIndex()==0){
@@ -546,7 +551,7 @@ public class DoomLauncher  implements Observer,Constants{
                         
                        
                     }
-                    if(jTabbedPane.getSelectedIndex()==1){
+                    if(jTabbedPane.getSelectedIndex()==1 || jTabbedPane.getSelectedIndex()==2){
                        // System.out.println("222");
                         southPanel.removeAll();
             
@@ -629,16 +634,27 @@ public class DoomLauncher  implements Observer,Constants{
             
         }
         
-       public void calcCompat(){
+       public void calcCompat(int compatNum){
             init();
             Integer buff=0;
-            for (int i = 0; i < COMPAT_VALUE.length; i++) {
-                if(compatOn[i])
-                    buff+=COMPAT_VALUE[i];
-                
+           if (compatNum == 0) {
+               for (int i = 0; i < COMPAT_VALUE.length; i++) {
+                   if (compatOn[i]) {
+                       buff += COMPAT_VALUE[i];
+                   }
+
+               }
+               compatJTextFields[0].setText(buff.toString());
+           }
+            if (compatNum == 1) {
+                for (int i = 0; i < COMPAT2_VALUE.length; i++) {
+                    if (compat2On[i]) {
+                        buff += COMPAT2_VALUE[i];
+                    }
+
+                }
+                compatJTextFields[1].setText(buff.toString());
             }
-            compatJTextFields[0].setText(buff.toString());
-            
         }
         
         public void changes(){

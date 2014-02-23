@@ -9,10 +9,13 @@ package doomlauncher;
 import doomlauncher.DoomLauncher.Misc;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import sun.awt.VariableGridLayout;
 
 /**
  *
@@ -24,12 +27,15 @@ public class CompatFlags extends JPanel implements Constants{
 
     DLJCheckBox compatCheckBox;
     JTextArea discriptionArea;
-    public CompatFlags(Misc misc) {
+    String[] descriptios;
+    public CompatFlags(Misc misc,String[] names, int[] values, String[] descriptions, int compat) {
         super();
+        this.descriptios=descriptions;
         setLayout(new BorderLayout());
         JPanel compatCheckBoxes=new JPanel();
-        for (int i = 0; i < COMPAT_VALUE.length; i++) {
-            compatCheckBox=new DLJCheckBox(COMPAT_NAMES[i], misc, i, DLJCCHECK_COMPAT);
+        compatCheckBoxes.setLayout(new GridLayout(10,2));
+        for (int i = 0; i < values.length; i++) {
+            compatCheckBox=new DLJCheckBox(names[i], misc, i, DLJCCHECK_COMPAT,compat);
             compatCheckBoxes.add(compatCheckBox);
         }
         
@@ -50,8 +56,8 @@ public class CompatFlags extends JPanel implements Constants{
         add(discriptionJPanel, BorderLayout.SOUTH);
     }
     
-    public void setTextArea(String text){
-        discriptionArea.setText(text);
+    public void setTextArea(int id){
+        discriptionArea.setText(descriptios[id]);
     }
     
     

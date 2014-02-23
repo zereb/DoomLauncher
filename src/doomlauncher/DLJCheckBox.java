@@ -16,6 +16,13 @@ import javax.swing.JCheckBox;
  * @author loludaed
  */
 public class DLJCheckBox extends JCheckBox implements Constants{
+    int compat=0;
+    
+    public DLJCheckBox(String string,final Misc m, final int dmflagnum, int mode,int compat) {
+        this(string,m,dmflagnum,mode);
+        this.compat=compat;
+        
+    }
 
     public DLJCheckBox(String string,final Misc m, final int dmflagnum, int mode) {
         super(string);
@@ -31,9 +38,17 @@ public class DLJCheckBox extends JCheckBox implements Constants{
         if(mode==DLJCCHECK_COMPAT){
             addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        m.compatOn[dmflagnum]=isSelected();
-                        m.calcCompat();
-                        m.compatFlags.setTextArea(COMPAT_DISCRIPTION[dmflagnum]);
+                        if (compat==1) {
+                             m.compat2On[dmflagnum]=isSelected();
+                             m.calcCompat(1);
+                             m.compatFlags2.setTextArea(dmflagnum);
+                        }
+                        if (compat==0) {
+                             m.compatOn[dmflagnum]=isSelected();
+                             m.calcCompat(0);
+                             m.compatFlags.setTextArea(dmflagnum);
+                        }
+                       
 
                     }
                 });
