@@ -7,6 +7,7 @@
 package doomlauncher;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -34,6 +35,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  *
@@ -282,7 +285,9 @@ public class DoomLauncher  implements Observer,Constants{
         frame.setLayout(new BorderLayout());
         frame.add(jTabbedPane, BorderLayout.CENTER);
         frame.add(buttonsJPanel, BorderLayout.SOUTH);
+        frame.pack();
         frame.setVisible(true);
+        
        
     }
     
@@ -403,8 +408,12 @@ public class DoomLauncher  implements Observer,Constants{
         JComboBox skillJComboBox;
         JTextField mapJTextField;
         JTextField[] dmFlagJTextFields=new JTextField[DMFLAGS_NUM];
+        JTextField[] compatJTextFields=new JTextField[2];
         JComboBox falingDamageJComboBox;
         JCheckBox svCheatsCheckBox;
+        JPanel southPanel1;
+            JPanel southPanel2;
+            JTabbedPane jTabbedPane;
         
         
         String miscParam;
@@ -412,6 +421,11 @@ public class DoomLauncher  implements Observer,Constants{
         int[] dmFlags=new int[DMFLAGS_NUM];
         String[] dmFlagsNames=new String[DMFLAGS_NUM];
         boolean[] dmFlagsOn=new boolean[DMFLAGS_VALUE.length];
+       
+        int[] compat=new int[2];
+        String[] compatNames=new String[2];
+        boolean[] compatOn=new boolean[COMPAT_VALUE.length];
+        JPanel southPanel;
        
         
      
@@ -446,22 +460,38 @@ public class DoomLauncher  implements Observer,Constants{
             JLabel[] dmFlagsJLabels=new JLabel[DMFLAGS_NUM];
             for (int i = 0; i < dmFlags.length; i++) {
                 if (i!=0) {
-                    dmFlagsNames[i]="dmflags"+1;
+                    dmFlagsNames[i]="+dmflags"+(i+1)+" ";
                     dmFlagsJLabels[i]=new JLabel("DMFlags"+i);
                 }else{
                     dmFlagsJLabels[i]=new JLabel("DMFlags");
-                    dmFlagsNames[i]="dmflags";
+                    dmFlagsNames[i]="+dmflags " ;
                 }
                 
                 dmFlagJTextFields[i]=new JTextField(10);
-//                dmFlagJTextFields[i].set
+
             }
+            
+            JLabel[] compatJLabels=new JLabel[2];
+            for (int i = 0; i < compat.length; i++) {
+                if (i!=0) {
+                    compatNames[i]="compatFlags"+i;
+                    compatJLabels[i]=new JLabel("CompatFlags"+i);
+                }else{
+                    compatJLabels[i]=new JLabel("DcompatFlags");
+                    compatNames[i]="compatFlags";
+                }
+                
+                compatJTextFields[i]=new JTextField(10);
+
+            }
+            
+            
             
             
             DLJCheckBox[] dmFlagsCheckBoxses=new DLJCheckBox[3];
             int dmFlagCheckBoxId=3;
             for (int i = 0; i < dmFlagsCheckBoxses.length; i++) {
-                dmFlagsCheckBoxses[i]=new DLJCheckBox(DMFLAGS_NAMES[dmFlagCheckBoxId], this, dmFlagCheckBoxId);
+                dmFlagsCheckBoxses[i]=new DLJCheckBox(DMFLAGS_NAMES[dmFlagCheckBoxId], this, dmFlagCheckBoxId, DLJCCHECK_DMFLAGS);
                 dmFlagCheckBoxId++;
             }
             
@@ -476,11 +506,57 @@ public class DoomLauncher  implements Observer,Constants{
             }
             flagsJPanel.add(svCheatsCheckBox);
             
+        
+              
             
+            southPanel1 = new JPanel();
+            for (int i = 0; i < DMFLAGS_NUM; i++) {
+                southPanel1.add(dmFlagsJLabels[i]);
+                southPanel1.add(dmFlagJTextFields[i]);
+
+            }
             
-            JTabbedPane jTabbedPane=new JTabbedPane();
+            southPanel2 = new JPanel();
+            for (int i = 0; i < 2; i++) {
+                southPanel2.add(compatJLabels[i]);
+                southPanel2.add(compatJTextFields[i]);
+
+            }
+            
+            southPanel=new JPanel();
+            southPanel.add(southPanel1);
+            
+            jTabbedPane = new JTabbedPane();
             jTabbedPane.addTab("Flags", flagsJPanel);
-           
+            jTabbedPane.addTab("compatibility", new CompatFlags(this));
+            jTabbedPane.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent e) {
+                    if(jTabbedPane.getSelectedIndex()==0){
+                        //System.out.println("111"); 
+                        southPanel.removeAll();
+                       
+                        southPanel.add(southPanel1);
+                        frame.repaint();
+                        
+                        
+                       
+                        
+                       
+                    }
+                    if(jTabbedPane.getSelectedIndex()==1){
+                       // System.out.println("222");
+                        southPanel.removeAll();
+            
+                        southPanel.add(southPanel2);
+                        frame.repaint();
+                        
+                        
+                        
+                        
+                    }
+                }
+            });
+                   
             
             miscJPanel.setLayout(new BorderLayout());
                 JPanel northJPanel=new JPanel();
@@ -490,13 +566,7 @@ public class DoomLauncher  implements Observer,Constants{
                 northJPanel.add(mapJLabel);
                 northJPanel.add(mapJTextField);
                 
-                
-                JPanel southPanel=new JPanel();
-                for (int i = 0; i < DMFLAGS_NUM; i++) {
-                    southPanel.add(dmFlagsJLabels[i]);
-                    southPanel.add(dmFlagJTextFields[i]);
-                    
-                }
+              
                 
             miscJPanel.add(northJPanel, BorderLayout.NORTH);    
             miscJPanel.add(jTabbedPane, BorderLayout.CENTER);
@@ -512,11 +582,16 @@ public class DoomLauncher  implements Observer,Constants{
             for (int i = 0; i < dmFlags.length; i++) {
                 dmFlags[i]=0;
             }
+            for (int i = 0; i < compat.length; i++) {
+                compat[i]=0;
+            }
             
             miscParam=new String();
             for(int i=0; i<miscArgs.length; i++){
                 miscArgs[i]=" ";
             }
+            
+            
         
         }
         
@@ -545,18 +620,24 @@ public class DoomLauncher  implements Observer,Constants{
         public void changes(){
             init();
             updateDmflags();
-            
+            int id=0;
             miscArgs[0]="-skill "+(skillJComboBox.getSelectedIndex()+1);
             if(mapJTextField.getText().length()>0)
                 miscArgs[1]="+map "+mapJTextField.getText();
             for (int i = 2; i < DMFLAGS_NUM+2; i++) {
                 int dmflagID=i-2;
-                System.out.println("dmflag"+dmflagID+": "+dmFlags[dmflagID]);
+                id=i;
                 if(dmFlags[dmflagID]!=0)
-                    miscArgs[i]="+dmflags "+dmFlags[dmflagID];
+                    miscArgs[i]=dmFlagsNames[dmflagID]+dmFlags[dmflagID];
             }
             int sv_cheats = (svCheatsCheckBox.isSelected()) ? 1 : 0;
-            miscArgs[0]="+sv_cheats "+(sv_cheats);
+             if(sv_cheats>0){
+                 miscArgs[id]="+sv_cheats "+(sv_cheats);
+                id++;
+             }
+            for (int i = 0; i < compat.length; i++) {
+                miscArgs[id]=compatNames[i]+compat[i];
+            }
             for (int i = 0; i < miscArgs.length; i++) {
                 miscParam+=" "+miscArgs[i];
             }
