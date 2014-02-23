@@ -17,6 +17,7 @@ import java.util.Observable;
 import java.util.Observer;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
@@ -403,6 +404,7 @@ public class DoomLauncher  implements Observer,Constants{
         JTextField mapJTextField;
         JTextField[] dmFlagJTextFields=new JTextField[DMFLAGS_NUM];
         JComboBox falingDamageJComboBox;
+        JCheckBox svCheatsCheckBox;
         
         
         String miscParam;
@@ -464,6 +466,7 @@ public class DoomLauncher  implements Observer,Constants{
             }
             
             
+            svCheatsCheckBox = new JCheckBox("cheats");
             
             JPanel flagsJPanel=new JPanel();
             flagsJPanel.add(fallingDamgeJLabel);
@@ -471,6 +474,7 @@ public class DoomLauncher  implements Observer,Constants{
             for (int i = 0; i < dmFlagsCheckBoxses.length; i++) {
                 flagsJPanel.add(dmFlagsCheckBoxses[i]);
             }
+            flagsJPanel.add(svCheatsCheckBox);
             
             
             
@@ -551,8 +555,8 @@ public class DoomLauncher  implements Observer,Constants{
                 if(dmFlags[dmflagID]!=0)
                     miscArgs[i]="+dmflags "+dmFlags[dmflagID];
             }
-            
-            
+            int sv_cheats = (svCheatsCheckBox.isSelected()) ? 1 : 0;
+            miscArgs[0]="+sv_cheats "+(sv_cheats);
             for (int i = 0; i < miscArgs.length; i++) {
                 miscParam+=" "+miscArgs[i];
             }
