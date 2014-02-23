@@ -37,6 +37,12 @@ public interface Constants{
     public static final int DMFLAGS=0;
     public static final int DMFLAGS2=1;
     public static final int DMFLAGS3=2;
+ 
+    public static final int DLJCCHECK_DMFLAGS=1;
+    public static final int DLJCCHECK_COMPAT=2;
+    
+    
+
     
     
     
@@ -61,4 +67,20 @@ public interface Constants{
         
         
     };
+    
+     public static final String[] COMPAT_NAMES={
+         "Find shortest textures like Doom"
+     };
+     public static final String[] COMPAT_DISCRIPTION={
+         "In Doom, AASHITTY in Doom II or AASTINKY in Doom was created to fill in the place of texture index 0, normally treated by the Doom engine as no texture at all. When this is enabled, the \"raise platform by lower texture\" line special and MAP07 floor raise considers AASHITTY or AASTINKY as a valid texture and uses it's height when raising a platform. If disabled, these textures aren't considered valid and are ignored."
+     };
+      
+    public static final int[] COMPAT_VALUE={
+        1
+        
+        
+    };
+    
+    
+   
 }

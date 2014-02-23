@@ -72,8 +72,8 @@ public class DoomLauncher  implements Observer,Constants{
     ProcessBuilderD processBuilderD;
    
     
-    public int WIDTH=740;
-    public int HEIGHT=480;
+    public int WIDTH=840;
+    public int HEIGHT=580;
    
     String[] argsPB;
     String[] customParametersArg;
@@ -409,6 +409,7 @@ public class DoomLauncher  implements Observer,Constants{
         JTextField mapJTextField;
         JTextField[] dmFlagJTextFields=new JTextField[DMFLAGS_NUM];
         JTextField[] compatJTextFields=new JTextField[2];
+        public CompatFlags compatFlags;
         JComboBox falingDamageJComboBox;
         JCheckBox svCheatsCheckBox;
         JPanel southPanel1;
@@ -474,11 +475,11 @@ public class DoomLauncher  implements Observer,Constants{
             JLabel[] compatJLabels=new JLabel[2];
             for (int i = 0; i < compat.length; i++) {
                 if (i!=0) {
-                    compatNames[i]="compatFlags"+i;
+                    compatNames[i]="+compatFlags"+(i+1)+" ";
                     compatJLabels[i]=new JLabel("CompatFlags"+i);
                 }else{
                     compatJLabels[i]=new JLabel("DcompatFlags");
-                    compatNames[i]="compatFlags";
+                    compatNames[i]="+compatFlags ";
                 }
                 
                 compatJTextFields[i]=new JTextField(10);
@@ -526,9 +527,11 @@ public class DoomLauncher  implements Observer,Constants{
             southPanel=new JPanel();
             southPanel.add(southPanel1);
             
+            compatFlags = new CompatFlags(this);
+            
             jTabbedPane = new JTabbedPane();
             jTabbedPane.addTab("Flags", flagsJPanel);
-            jTabbedPane.addTab("compatibility", new CompatFlags(this));
+            jTabbedPane.addTab("compatibility",compatFlags);
             jTabbedPane.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
                     if(jTabbedPane.getSelectedIndex()==0){
@@ -604,6 +607,15 @@ public class DoomLauncher  implements Observer,Constants{
                 
             }
         }
+        private void updateCompat() {
+            for (int i = 0; i < compat.length; i++) {
+                try {
+                    compat[i]=Integer.parseInt(compatJTextFields[i].getText());
+                } catch (NumberFormatException e) {
+                }
+                
+            }
+        }
         
         public void calcDmFlags(int flag){
             init();
@@ -617,18 +629,34 @@ public class DoomLauncher  implements Observer,Constants{
             
         }
         
+       public void calcCompat(){
+            init();
+            Integer buff=0;
+            for (int i = 0; i < COMPAT_VALUE.length; i++) {
+                if(compatOn[i])
+                    buff+=COMPAT_VALUE[i];
+                
+            }
+            compatJTextFields[0].setText(buff.toString());
+            
+        }
+        
         public void changes(){
             init();
             updateDmflags();
+            updateCompat();
             int id=0;
             miscArgs[0]="-skill "+(skillJComboBox.getSelectedIndex()+1);
             if(mapJTextField.getText().length()>0)
                 miscArgs[1]="+map "+mapJTextField.getText();
+            id=2;
             for (int i = 2; i < DMFLAGS_NUM+2; i++) {
                 int dmflagID=i-2;
-                id=i;
-                if(dmFlags[dmflagID]!=0)
-                    miscArgs[i]=dmFlagsNames[dmflagID]+dmFlags[dmflagID];
+                
+                if(dmFlags[dmflagID]!=0){
+                    miscArgs[id]=dmFlagsNames[dmflagID]+dmFlags[dmflagID];
+                    id++;
+                }
             }
             int sv_cheats = (svCheatsCheckBox.isSelected()) ? 1 : 0;
              if(sv_cheats>0){
@@ -636,7 +664,11 @@ public class DoomLauncher  implements Observer,Constants{
                 id++;
              }
             for (int i = 0; i < compat.length; i++) {
-                miscArgs[id]=compatNames[i]+compat[i];
+                if (compat[i]!=0) {
+                    miscArgs[id]=compatNames[i]+compat[i];
+                    id++;
+                }
+                
             }
             for (int i = 0; i < miscArgs.length; i++) {
                 miscParam+=" "+miscArgs[i];
