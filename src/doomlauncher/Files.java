@@ -49,25 +49,29 @@ public class Files implements Constants{
             setConfig("/", PWAD_FOLDER_CONFIG,0);
         }
         if (new File(ENGINE_FOLDER_CONFIG).exists()){
-            Integer numEn=0;
             try {
-                numEn=Integer.parseInt(readIWADConfig(ENGINE_FOLDER_CONFIG, 0, 1));
+                    String config1String=readConfig(ENGINE_FOLDER_CONFIG, 1);
+                    int config1=Integer.parseInt(config1String);
+                    engine=new File[config1];
+                    int stringId=2;
+                    System.out.println("Reading config: "+ENGINE_FOLDER_CONFIG);
+                    for (int i = 0; i < config1 ; i++) {
+                        engine[i] = new File(readConfig(ENGINE_FOLDER_CONFIG, stringId));
+                        stringId++;
+                    }
+                    System.out.println("Done: "+ENGINE_FOLDER_CONFIG);
+               
             } catch (NumberFormatException e) {
-                setConfig(ENGINE[0], ENGINE_FOLDER_CONFIG,1);
-                
+                System.out.println("Error with parse first string in conf "+ENGINE_FOLDER_CONFIG);
+                System.out.println("Creating new defult "+ENGINE_FOLDER_CONFIG);
+                writeConfig(ENGINE_FOLDER_CONFIG, ENGINE);
             }
-            
-            engine=new File[numEn];
-            engineName=new String[numEn];
-            for (int i = 0; i < engine.length; i++) {
-                setEngine(readIWADConfig(ENGINE_FOLDER_CONFIG,i,2),i);
-            }
-            
         }else{
-            engine=new File[1];
-            engineName=new String[1];
-            setConfig(ENGINE[0], ENGINE_FOLDER_CONFIG,1);
+             System.out.println(ENGINE_FOLDER_CONFIG+" Not exist");
+             System.out.println("Creating new defult "+ENGINE_FOLDER_CONFIG);
+             writeConfig(ENGINE_FOLDER_CONFIG, ENGINE);
         }
+            
        
         
         initIWADS();
@@ -81,13 +85,31 @@ public class Files implements Constants{
         engineName[id]=engine[id].getName();
     }
     
+    public boolean writeConfig(String confName, String[] strings){
+        File conf=new File(confName);
+        try {
+            FileWriter confWriter=new FileWriter(conf);
+            confWriter.append(strings.length+"\n");
+            for (int i = 0; i < strings.length; i++) {
+                confWriter.append(strings[i]+"\n");
+            }
+            confWriter.flush();
+            confWriter.close();
+        } catch (IOException ex) {
+            System.out.println("Eror write config: "+confName);
+            return false;
+        }
+        return true;
+    }
+    
+    
     public String readConfig(String confName, Integer stringNum){
         File conf=new File(confName);
         String buff;
         try {
             BufferedReader bf=new BufferedReader(new FileReader(conf));
             try {
-                for (int i = 0; i <= stringNum; i++) {
+                for (int i = 1; i <= stringNum; i++) {
                     buff=bf.readLine();
                     if(i==stringNum)
                         return buff;
