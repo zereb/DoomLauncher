@@ -97,6 +97,7 @@ public class ProcessBuilderD extends Observable implements Runnable{
                 }else{  
                 
                 outEXE=outEXE.concat(outEXELine);
+                stateChanged();
     
                 }
                 try {
