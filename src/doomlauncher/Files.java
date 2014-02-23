@@ -31,27 +31,42 @@ public class Files implements Constants{
     private int pwadCount=0;
     
     
-    public File engine;
-    public String engineName;
+    public File[] engine;
+    public String[] engineName;
     
     
  
 
     public Files() {
         if (new File(IWAD_FOLDER_CONFIG).exists()) {
-            allFiles=new File(readIWADConfig(IWAD_FOLDER_CONFIG)).listFiles();
+            allFiles=new File(readIWADConfig(IWAD_FOLDER_CONFIG,0,1)).listFiles();
         }else{
-            setConfig("/", IWAD_FOLDER_CONFIG);
+            setConfig("/", IWAD_FOLDER_CONFIG,0);
         }
         if (new File(PWAD_FOLDER_CONFIG).exists()){
             
         }else{
-            setConfig("/", PWAD_FOLDER_CONFIG);
+            setConfig("/", PWAD_FOLDER_CONFIG,0);
         }
         if (new File(ENGINE_FOLDER_CONFIG).exists()){
-            setEngine(readIWADConfig(ENGINE_FOLDER_CONFIG));
+            Integer numEn=0;
+            try {
+                numEn=Integer.parseInt(readIWADConfig(ENGINE_FOLDER_CONFIG, 0, 1));
+            } catch (NumberFormatException e) {
+                setConfig(ENGINE[0], ENGINE_FOLDER_CONFIG,1);
+                
+            }
+            
+            engine=new File[numEn];
+            engineName=new String[numEn];
+            for (int i = 0; i < engine.length; i++) {
+                setEngine(readIWADConfig(ENGINE_FOLDER_CONFIG,i,2),i);
+            }
+            
         }else{
-            setConfig(ENGINE[0], ENGINE_FOLDER_CONFIG);
+            engine=new File[1];
+            engineName=new String[1];
+            setConfig(ENGINE[0], ENGINE_FOLDER_CONFIG,1);
         }
        
         
@@ -60,17 +75,51 @@ public class Files implements Constants{
      }
     
     
-    public void setEngine(String path){
-        engine=new File(path);
-        engineName=engine.getName();
+    public void setEngine(String path, int id){
+       
+        engine[id]=new File(path);
+        engineName[id]=engine[id].getName();
     }
     
+    public String readConfig(String confName, Integer stringNum){
+        File conf=new File(confName);
+        String buff;
+        try {
+            BufferedReader bf=new BufferedReader(new FileReader(conf));
+            try {
+                for (int i = 0; i <= stringNum; i++) {
+                    buff=bf.readLine();
+                    if(i==stringNum)
+                        return buff;
+                }
+            } catch (IOException ex) {
+                
+            }
+        } catch (FileNotFoundException ex) {
+            System.out.println("Error read config "+ex);
+        }
+        return null;
+    }
     
-    public void setConfig(String path, String name){
+    public void setConfig(String path, String name, Integer str){
+    
+        
         File defaultFolderConfig=new File(name);
         try {
             FileWriter defaultFolderConfigWriter=new FileWriter(defaultFolderConfig);
-            defaultFolderConfigWriter.append(path);
+            if(str>0){
+                defaultFolderConfigWriter.append(str.toString()+"\n");
+                int ideng=0;
+                for (int i = 1; i <=str ; i++) {
+                    if(i==str)
+                        defaultFolderConfigWriter.append(path+"\n");
+                    else
+                        defaultFolderConfigWriter.append(engine[ideng].getAbsolutePath()+"\n");
+                        ideng++;
+                }
+            }
+            else
+              defaultFolderConfigWriter.append(path+"\n");
             defaultFolderConfigWriter.flush();
             defaultFolderConfigWriter.close();
         } catch (IOException ex) {
@@ -79,12 +128,34 @@ public class Files implements Constants{
         
     }
     
-    public String readIWADConfig(String name){
+    public void addEngine(String path){
+        int engines=engine.length;
+        setConfig(path, ENGINE_FOLDER_CONFIG, engines+1);
+        engine=new File[engines+1];
+        engineName=new String[engines+1];
+            for (int i = 0; i < engine.length; i++) {
+               setEngine(readIWADConfig(ENGINE_FOLDER_CONFIG,i,2),i);
+            }
+        
+    }
+    
+    public String readIWADConfig(String name,int  id, int mode){
         File conf=new File(name);
+        String buff;
         try {
             BufferedReader bf=new BufferedReader(new FileReader(conf));
             try {
-                return bf.readLine();
+                if(mode==1)
+                    return bf.readLine();
+                if(mode==2)
+                    buff=bf.readLine();
+                    for (int i = 0; i <=id; i++) {
+                        buff=bf.readLine();
+                        if (i==id) {
+                            return buff;
+                        }
+                    }
+                
             } catch (IOException ex) {
                 
             }
