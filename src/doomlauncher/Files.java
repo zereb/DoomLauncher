@@ -52,8 +52,8 @@ public class Files implements Constants{
         if (new File(ENGINE_FOLDER_CONFIG).exists()){
            
         }else{
-             System.out.println(ENGINE_FOLDER_CONFIG+" Not exist");
-             System.out.println("Creating new defult "+ENGINE_FOLDER_CONFIG);
+             Printer.print(ENGINE_FOLDER_CONFIG+" Not exist");
+             Printer.print("Creating new defult "+ENGINE_FOLDER_CONFIG);
              writeConfig(ENGINE_FOLDER_CONFIG, ENGINE);
         }
             
@@ -77,20 +77,20 @@ public class Files implements Constants{
             int config1 = Integer.parseInt(config1String);
             engine = new File[config1];
             int stringId = 2;
-            System.out.println("Reading config: " + ENGINE_FOLDER_CONFIG);
+            Printer.print("Reading config: " + ENGINE_FOLDER_CONFIG);
             for (int i = 0; i < config1; i++) {
                 engine[i] = new File(readConfig(ENGINE_FOLDER_CONFIG, stringId));
                 stringId++;
             }
-            System.out.println("Done: " + ENGINE_FOLDER_CONFIG);
+            Printer.print("Done: " + ENGINE_FOLDER_CONFIG);
             engineName=new String[engine.length];
             for (int i = 0; i < engine.length; i++) {
                 engineName[i]=engine[i].getName();
             }
 
         } catch (NumberFormatException e) {
-            System.out.println("Error with parse first string in conf " + ENGINE_FOLDER_CONFIG);
-            System.out.println("Creating new defult " + ENGINE_FOLDER_CONFIG);
+            Printer.print("Error with parse first string in conf " + ENGINE_FOLDER_CONFIG);
+            Printer.print("Creating new defult " + ENGINE_FOLDER_CONFIG);
             writeConfig(ENGINE_FOLDER_CONFIG, ENGINE);
             initEngine();
             
@@ -109,7 +109,7 @@ public class Files implements Constants{
             confWriter.flush();
             confWriter.close();
         } catch (IOException ex) {
-            System.out.println("Eror write config: "+confName);
+            Printer.print("Eror write config: "+confName);
             return false;
         }
         return true;
@@ -135,10 +135,10 @@ public class Files implements Constants{
                         return buff;
                 }
             } catch (IOException ex) {
-                System.out.println("Error read config "+ex);
+                Printer.print("Error read config "+ex);
             }
         } catch (FileNotFoundException ex) {
-            System.out.println("Error read config "+ex);
+            Printer.print("Error read config "+ex);
         }
         return null;
     }
@@ -180,10 +180,10 @@ public class Files implements Constants{
         engine[engines-1]=new File(path);
         updateEngines();
         if(writeConfig(ENGINE_FOLDER_CONFIG, engine)){
-            System.out.println("Sucesfully added engine: "+path);
+            Printer.print("Sucesfully added engine: "+path);
            
         }else{
-             System.out.println("Can't add engine: "+path);
+             Printer.print("Can't add engine: "+path);
         }
         
         
@@ -193,10 +193,10 @@ public class Files implements Constants{
         engine[id]=new File(path);
         engineName[id]=engine[id].getName();
         if(writeConfig(ENGINE_FOLDER_CONFIG, engine)){
-            System.out.println("Sucesfully changed engine: "+path);
+            Printer.print("Sucesfully changed engine: "+path);
            
         }else{
-             System.out.println("Can't change engine: "+path);
+             Printer.print("Can't change engine: "+path);
         }
         
         
@@ -223,7 +223,7 @@ public class Files implements Constants{
                 
             }
         } catch (FileNotFoundException ex) {
-            System.out.println(ex);
+            Printer.print(ex.toString());
         }
         return null;
     }
@@ -325,7 +325,7 @@ public class Files implements Constants{
             
             
             int newStart=id+1;
-            System.out.println(newStart);
+            //Printer.print(newStart);
             for (int i = 0; i < buffer1.length; i++) {
                buffer1[i] = pwad[i]; 
             }

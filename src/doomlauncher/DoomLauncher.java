@@ -51,7 +51,7 @@ import javax.swing.text.StyledDocument;
  *
  * @author loludaed
  */
-public class DoomLauncher  implements Observer,Constants{
+public class DoomLauncher implements Observer,Constants,Runnable{
 
     /**
      * @param args the command line arguments
@@ -87,9 +87,12 @@ public class DoomLauncher  implements Observer,Constants{
    
     String[] argsPB;
     String[] customParametersArg;
-
+    Thread t;
     
     public  DoomLauncher(){
+        
+        t = new Thread(this);
+        
         files=new Files();
         engines=files.engineName;
         
@@ -315,7 +318,7 @@ public class DoomLauncher  implements Observer,Constants{
         frame.pack();
         frame.setVisible(true);
         
-       
+        t.start();
     }
     
    
@@ -323,7 +326,7 @@ public class DoomLauncher  implements Observer,Constants{
    private void initLaunch() {
        misc.changes();
        String customParam=customParamJTtextArea.getText()+" "+misc.miscParam;
-       System.out.println(customParam.length());
+      // Printer.print(customParam.length());
        if(customParam.length()>0){
             customParametersArg = customParam.split(" ");
        }
@@ -340,14 +343,14 @@ public class DoomLauncher  implements Observer,Constants{
            int pwadID=0;
            argsPB[LAUNCH_CMD_ARG_FILE]="-file";
            for (int i = LAUNCH_CMD_ARG_FILEPATH; i < LAUNCH_CMD_ARG_FILEPATH+files.pwad.length; i++) {
-               argsPB[i]=files.pwad[pwadID].getAbsolutePath(); System.out.println(i+" pwad "+pwadID);
+               argsPB[i]=files.pwad[pwadID].getAbsolutePath(); Printer.print(i+" pwad "+pwadID);
                    pwadID++;
                   
            }    
         }   
        if (customParam.length() > 0) {
            String[] buffer = argsPB;
-           System.out.println(customParametersArg.length);
+          // Printer.print(customParametersArg.length);
            argsPB = new String[calculateARGSLength() + customParametersArg.length];
            for (int i = 0; i < argsPB.length; i++) {
                if(i<buffer.length){
@@ -415,8 +418,10 @@ public class DoomLauncher  implements Observer,Constants{
     }
     
     public static void main(String[] args) {
-        
     
+    
+        
+       Printer.print("Hello mafaka!");
        try {
             for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 
@@ -437,6 +442,24 @@ public class DoomLauncher  implements Observer,Constants{
             }
         });
         
+    }
+
+    
+    public void run() {
+        while (true) {            
+            try {
+                
+                document.insertString(document.getLength(), Printer.getLogStr(), null);
+                
+            } catch (BadLocationException ex) {
+                Printer.print(ex.toString());
+            }
+            try {
+                t.sleep(500);
+            } catch (InterruptedException ex) {
+                Printer.print(ex.toString());
+            }
+        }
     }
 
     public class Misc {
@@ -577,7 +600,7 @@ public class DoomLauncher  implements Observer,Constants{
             jTabbedPane.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
                     if(jTabbedPane.getSelectedIndex()==0){
-                        //System.out.println("111"); 
+                        //Printer.print("111"); 
                         southPanel.removeAll();
                        
                         southPanel.add(southPanel1);
@@ -589,7 +612,7 @@ public class DoomLauncher  implements Observer,Constants{
                        
                     }
                     if(jTabbedPane.getSelectedIndex()==1 || jTabbedPane.getSelectedIndex()==2){
-                       // System.out.println("222");
+                       // Printer.print("222");
                         southPanel.removeAll();
             
                         southPanel.add(southPanel2);
