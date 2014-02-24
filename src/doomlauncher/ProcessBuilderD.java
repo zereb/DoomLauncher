@@ -29,7 +29,8 @@ public class ProcessBuilderD extends Observable implements Runnable{
     InputStream errorStream;
 
     private Process process;
-    
+               
+
     public ProcessBuilderD(String[] cmd){
         try {
             
@@ -47,7 +48,7 @@ public class ProcessBuilderD extends Observable implements Runnable{
             
          
         } catch (IOException e) {
-            System.err.println(e);
+            System.out.println(e);
         }
 
     }
@@ -101,7 +102,7 @@ public class ProcessBuilderD extends Observable implements Runnable{
     
                 }
                 try {
-                    Thread.sleep(1);
+                    Thread.sleep(50);
                 } catch (InterruptedException ex) {
                 }
                 
