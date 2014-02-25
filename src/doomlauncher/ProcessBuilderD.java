@@ -11,11 +11,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Observable;
-import java.util.logging.Logger;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.*;
 
 /**
+ * @author loludaed
  *
  * @author loludaed
  */
@@ -23,45 +21,45 @@ public class ProcessBuilderD extends Observable implements Runnable{
     private String outEXELine;
     private String outEXE=new String();
 
-    
+
     BufferedReader bufferedReader;
     InputStream inputStream;
     InputStream errorStream;
 
     private Process process;
-               
+
 
     public ProcessBuilderD(String[] cmd){
         try {
-            
+
             process = Runtime.getRuntime().exec(cmd);
             inputStream = process.getInputStream();
             errorStream = process.getErrorStream();
-            
+
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             bufferedReader = new BufferedReader(inputStreamReader);
-            
-            
-            
+
+
+
             Thread thread=new Thread(this);
             thread.start();
-            
-         
+
+
         } catch (IOException e) {
             System.out.println(e);
         }
 
     }
-    
+
     public int exitValue(){
         try {
             return process.exitValue();
         } catch (Exception e) {
             return 1;
         }
-       
+
     }
-    
+
     private void closeProcess(){
         try {
             deleteObservers();
@@ -69,51 +67,51 @@ public class ProcessBuilderD extends Observable implements Runnable{
             System.err.println(e);
         }
     }
-    
-  
-    
+
+
+
     public String getOutEXE(){
         return outEXE;
     }
-    
+
     public String getOutEXELine(){
         return outEXELine;
     }
-     
+
     private void stateChanged(){
         setChanged();
         notifyObservers();
     }
-    
-    
-    
+
+
+
     public void run() {
         try {
-            
-           
+
+
             while ((outEXELine = bufferedReader.readLine()+"\n") != null && exitValue()==1) {
                if (exitValue()==0) {
                     closeProcess();
                     break;
-                }else{  
-                
+                }else{
+
                 outEXE=outEXE.concat(outEXELine);
                 stateChanged();
-    
+
                 }
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException ex) {
                 }
-                
-               
-                
+
+
+
 
             }
         } catch (IOException ex) {
             System.err.println(ex);
         }
     }
-    
-    
+
+
 }

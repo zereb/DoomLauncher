@@ -16,40 +16,40 @@ public interface Constants{
     public static final int LAUNCH_CMD_ARG_IWADPATH=2;
     public static final int LAUNCH_CMD_ARG_FILE=3;
     public static final int LAUNCH_CMD_ARG_FILEPATH=4;
-    
+
     public static final String IWAD_FOLDER_CONFIG="iwad.cfg";
     public static final String PWAD_FOLDER_CONFIG="wad.cfg";
     public static final String ENGINE_FOLDER_CONFIG="engine.cfg";
-    
+
     public static final String[] SKILLS={
         "I'm too young to die","Hey, not too rough","Hurt me plenty","Ultra-Violence","Nightmare!"};
     public static final String[] FALLING_DAMAGE={
         "None", "Falling damage (Old)","Falling damage (Hexen)","Falling damage (Strife)"};
 
-    
-    
+
+
     public static final int FILE_CHOOSE_IWAD=1;
     public static final int FILE_CHOOSE_PWAD=2;
     public static final int FILE_CHOOSE_ENGINE=3;
     public static final int FILE_ADD_ENGINE=4;
-    
-    
+
+
     public static final int DMFLAGS_NUM=3;
     public static final int DMFLAGS=0;
     public static final int DMFLAGS2=1;
     public static final int DMFLAGS3=2;
- 
+
     public static final int DLJCCHECK_DMFLAGS=1;
     public static final int DLJCCHECK_COMPAT=2;
-    
-    
 
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
     public static String[] ENGINE={"zandronum"};
     public static final String[] IWAD_NAMES={
         "doom1.wad","freedoom1.wad","doom2.wad","tnt.wad","plutonia.wad",
@@ -57,22 +57,22 @@ public interface Constants{
          "hexdd.wad","strife0.wad","strife1.wad","chex.wad","chex3.wad","action2.wad","harm1.wad","hacx.wad","hacx2.wad",
          "strife.wad","hexendemo.wad","hexdemo.wad","blasphem.wad","blasphemer.wad","doom2bfg.wad","bfgdoom.wad","doomu.wad"
     };
-    
+
    public static final String[] DMFLAGS_NAMES={
        "","","","Fast monstres","Allow jump","Allow crouch"};
-   
-    
+
+
     public static final int[] DMFLAGS_VALUE={
         8,          //0 faling damadge old
         16,         //1 faling damadge hexen
         24,         //2 faling damadge strife
         32768,      //3 fast monstres
         536870912,  //4 Allow jumping
-        1073741824  //5 Allow crouch    
-        
-        
+        1073741824  //5 Allow crouch
+
+
     };
-    
+
      public static final String[] COMPAT_NAMES={
          "Find shortest textures like Doom","Use buggier stair building",
          "Limit pain elementals to 20 lost souls","Don't let others hear pickups","Actors are infinitely tall","Allow silent BFG trick",
@@ -119,16 +119,12 @@ public interface Constants{
          "Sector sounds use original method for sound origin.",
          "Use original Doom heights for clipping against projectiles",
          "Use original Doom heights for clipping against projectiles",
-        
-         
+
+
      };
-      
-    public static final int[] COMPAT_VALUE={
-        1,2,4,16,32,64,128,256,512,1024,4096,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304,8388608,16777216,33554432,67108864,134217728,268435456,536870912,1073741824
-        
-        
-    };
-    
+
+
+
     public static final String[] COMPAT2_DESCRIPTION={
     "Uses Skulltag's old behavior when (NET) ACS Scripts are used. This is disabled by default, for compatibility among other ZDoom wads. If the WAD file is designed for Skulltag, and uses NET script advantages, then you would enable this feature.",
     "This needs to be enabled to make the ACS function GetPlayerInput work on server side scripts with buttons other than BT_ATTACK, BT_USE, BT_JUMP, BT_CROUCH, BT_TURN180, BT_ALTATTACK, BT_RELOAD and BT_ZOOM. Because it increases net traffic, it should only be activated if needed.",
@@ -144,9 +140,9 @@ public interface Constants{
     "If this is enabled, non-SOLID things (like flags) fall through invisible bridges.",
     "Enables the old ZDoom 1.23b33 jump physics.",
     "This flag disallows the ability to switch weapons while in the middle of A_Raise. Once the selected weapon starts its raising sequence, it cannot be cancelled.",
-    
+
     };
-    
+
     public static final String[] COMPAT2_NAMES={
         "Client side scripts (NET)","clients send full button info",
         "No land","Old random generator",
@@ -155,13 +151,15 @@ public interface Constants{
         "Old jump physics","No weapon switch cancellation"
 
     };
-    
-    public static final int[] COMPAT2_VALUE={
-        1,2,4,16,32,64,128,256,512,
-        
-        
-    };
-   
-    
-   
+
+
+    public static final int COMPAT_SIZE=31;
+    public static final int COMPAT2_SIZE=9;
+    public static final int[] COMPAT_SIZES={COMPAT_SIZE,COMPAT2_SIZE};
+
+
+
+
+
+
 }
