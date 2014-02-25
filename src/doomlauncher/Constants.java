@@ -21,7 +21,7 @@ public interface Constants{
     public static final String PWAD_FOLDER_CONFIG="wad.cfg";
     public static final String ENGINE_FOLDER_CONFIG="engine.cfg";
 
-    public static final String[] SKILLS={
+    public static final String[] SKILLS={"None (don't start new game)",
         "I'm too young to die","Hey, not too rough","Hurt me plenty","Ultra-Violence","Nightmare!"};
     public static final String[] FALLING_DAMAGE={
         "None", "Falling damage (Old)","Falling damage (Hexen)","Falling damage (Strife)"};
@@ -52,7 +52,7 @@ public interface Constants{
 
 
 
-    public static String[] ENGINE={"zandronum"};
+    public static String[] ENGINE={""};
     public static final String[] IWAD_NAMES={
         "doom1.wad","freedoom1.wad","doom2.wad","tnt.wad","plutonia.wad",
          "freedm.wad","freedm.wad","freedoom2.wad","doom2f.wad","heretic1.wad","heretic.wad","hexen.wad",

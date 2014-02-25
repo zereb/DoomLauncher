@@ -208,6 +208,9 @@ public class DoomLauncher implements Observer, Constants, Runnable {
             }
 
         });
+        jListPwads = new JList<File>(files.pwad);
+        jListPwads.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane jScrollPanePwads = new JScrollPane(jListPwads);
         JButton jButtonLoad = new JButton("Load");
         jButtonLoad.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -250,9 +253,7 @@ public class DoomLauncher implements Observer, Constants, Runnable {
 
         });
 
-        jListPwads = new JList<File>(files.pwad);
-        jListPwads.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane jScrollPanePwads = new JScrollPane(jListPwads);
+
 
         //panel pwads
         JPanel pwadsJPanel = new JPanel();
@@ -393,7 +394,7 @@ public class DoomLauncher implements Observer, Constants, Runnable {
     }
 
     public void showError() {
-        JOptionPane.showMessageDialog(frame, "U muse", "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(frame, "You must set engine and iwad first", "Error", JOptionPane.ERROR_MESSAGE);
 
     }
 
@@ -404,9 +405,11 @@ public class DoomLauncher implements Observer, Constants, Runnable {
         commandLineJFrame.setPreferredSize(new Dimension(WIDTH / 2, HEIGHT / 2));
         commandLineJFrame.setLocationRelativeTo(frame);
 
+
         JTextArea commandLineJTextArea = new JTextArea();
         commandLineJTextArea.setLineWrap(true);
         commandLineJTextArea.setWrapStyleWord(true);
+        commandLineJTextArea.setEditable(true);
         JScrollPane commandLineJScrollPane = new JScrollPane(commandLineJTextArea);
 
         commandLineJTextArea.setText(getCommandString());
@@ -488,14 +491,14 @@ public class DoomLauncher implements Observer, Constants, Runnable {
 
             miscJPanel = new JPanel();
             JLabel skillJLabel = new JLabel("Skill: ");
-            skillJComboBox = new JComboBox(SKILLS);
+            skillJComboBox = new JComboBox<String>(SKILLS);
 
             JLabel mapJLabel = new JLabel("Map: ");
             mapJTextField = new JTextField(15);
 
             JLabel fallingDamgeJLabel = new JLabel("Falling damage: ");
 
-            falingDamageJComboBox = new JComboBox(FALLING_DAMAGE);
+            falingDamageJComboBox = new JComboBox<String>(FALLING_DAMAGE);
             falingDamageJComboBox.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     switch (falingDamageJComboBox.getSelectedIndex()) {
@@ -780,7 +783,7 @@ public class DoomLauncher implements Observer, Constants, Runnable {
             for (int i = 0; i < 31; i++) {
                 int mask = 0b00000001;
                 buff[i] += (mask & flagValue >>> i);
-                System.err.println(buff[i]);
+                System.err.print(buff[i]);
             }
             return buff;
 
@@ -791,7 +794,12 @@ public class DoomLauncher implements Observer, Constants, Runnable {
             updateDmflags();
 
             int id = 0;
-            miscArgs[0] = "-skill " + (skillJComboBox.getSelectedIndex() + 1);
+            if (skillJComboBox.getSelectedIndex()!=0) {
+                miscArgs[0] = "-skill " + (skillJComboBox.getSelectedIndex()-1);
+            }else{
+                miscArgs[0]= "";
+            }
+
             if (mapJTextField.getText().length() > 0) {
                 miscArgs[1] = "+map " + mapJTextField.getText();
             }

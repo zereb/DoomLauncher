@@ -46,7 +46,7 @@ public class ProcessBuilderD extends Observable implements Runnable{
 
 
         } catch (IOException e) {
-            System.out.println(e);
+            Printer.print(e.toString());
         }
 
     }

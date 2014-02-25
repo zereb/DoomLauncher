@@ -118,6 +118,7 @@ public class Files implements Constants{
         String[] strings=new String[files.length];
         for (int i = 0; i < strings.length; i++) {
             strings[i]=files[i].getAbsolutePath();
+
         }
         return writeConfig(confName, strings);
     }
@@ -174,22 +175,33 @@ public class Files implements Constants{
     public void addEngine(String path){
         int engines=engine.length+1;
         File[] buff=engine;
-        engine=new File[engines];
         boolean original=false;
-        for (int i = 0; i < buff.length; i++) {
-           engine[i]=buff[i];
-            if (!path.equals(engine[i].getAbsolutePath())) {
+        for (int i = 0; i < engine.length; i++) {
+           if (!path.equals(engine[i].getAbsolutePath())) {
                 original=true;
             }
         }
-        if (original)
-            engine[engines-1]=new File(path);
-        updateEngines();
-        if(writeConfig(ENGINE_FOLDER_CONFIG, engine)){
-            Printer.print("Sucesfully added engine: "+path);
+        if (original) {
+            engine = new File[engines];
+
+            for (int i = 0; i < buff.length; i++) {
+                engine[i] = buff[i];
+                if (!path.equals(engine[i].getAbsolutePath())) {
+                    original = true;
+                }
+            }
+            engine[engines - 1] = new File(path);
+            updateEngines();
+
+            if (writeConfig(ENGINE_FOLDER_CONFIG, engine)) {
+                Printer.print("Sucesfully added engine: " + path);
+
+            } else {
+                Printer.print("Can't add engine: " + path);
+            }
 
         }else{
-             Printer.print("Can't add engine: "+path);
+            Printer.print("This engine alredy exist: "+path);
         }
 
 
