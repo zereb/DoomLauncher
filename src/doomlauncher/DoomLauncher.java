@@ -219,7 +219,7 @@ public class DoomLauncher implements Observer, Constants, Runnable {
                             System.out.println(config[i]);
                         }
                         files.addEngine(config[0]);
-                        files.addIwad(config[1], "IWAD form loaded Config: ");
+                        files.addIwad(config[1], "IWAD from loaded Config: ");
                         jComboBoxIwads.removeAllItems();
                         for (int i = 0; i < files.getIWADCount(); i++) {
                             jComboBoxIwads.addItem(files.iwadsNames[i]);
@@ -417,7 +417,7 @@ public class DoomLauncher implements Observer, Constants, Runnable {
 
     public static void main(String[] args) {
 
-        Printer.print("Hello mafaka!");
+        Printer.print("Hello!");
         try {
             for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 

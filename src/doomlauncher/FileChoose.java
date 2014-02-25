@@ -169,7 +169,7 @@ public class FileChoose implements Constants{
                     Printer.print("Done: "+ jFileChooser.getSelectedFile().getAbsolutePath());
                 } catch (NumberFormatException e) {
                     configString = new String[0];
-                    Printer.print("Erorr can't read config: " + e);
+                    Printer.print("Erorr can't parse config: " + e);
                 }
 
             }
