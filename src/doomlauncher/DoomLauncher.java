@@ -231,6 +231,14 @@ public class DoomLauncher implements Observer, Constants, Runnable {
                         misc.compat[1] = Integer.parseInt(config[3]);
                         misc.compatUpdate(misc.compat[0], 1);
                         misc.compatUpdate(misc.compat[1], 2);
+                        File[] pwadsFiles=new File[Integer.parseInt(config[4])];
+                        int confId=5;
+                        for (int i = 0; i < pwadsFiles.length; i++) {
+                            pwadsFiles[i]=new File(config[confId]);
+                            confId++;
+                        }
+                        files.addPWADS(pwadsFiles);
+                        jListPwads.setListData(files.pwad);
 
 
                     }catch (NumberFormatException ex) {
