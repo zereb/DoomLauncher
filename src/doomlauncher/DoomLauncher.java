@@ -73,8 +73,12 @@ public class DoomLauncher implements Observer, Constants, Runnable {
     String[] argsPB;
     String[] customParametersArg;
     Thread t;
+    int[] compat = new int[2];
 
     public DoomLauncher() {
+        for (int i = 0; i < compat.length; i++) {
+            compat[i]=0;
+        }
 
         t = new Thread(this);
 
@@ -196,6 +200,47 @@ public class DoomLauncher implements Observer, Constants, Runnable {
             }
 
         });
+        JButton jButtonsSave = new JButton("Save");
+        jButtonsSave.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                fileChoose=new FileChoose(files, FILE_SAVE, jComboBoxEngines.getSelectedIndex(), jComboBoxIwads.getSelectedIndex(), files.pwad, misc.compat);
+
+            }
+
+        });
+        JButton jButtonLoad = new JButton("Load");
+        jButtonLoad.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                fileChoose=new FileChoose(files, FILE_LOAD);
+                if (fileChoose.succesfullyReadConfig) {
+                    try {
+                        String[] config = fileChoose.configString;
+                        for (int i = 0; i < config.length; i++) {
+                            System.out.println(config[i]);
+                        }
+                        files.addEngine(config[0]);
+                        files.addIwad(config[1], "IWAD form loaded Config: ");
+                        jComboBoxIwads.removeAllItems();
+                        for (int i = 0; i < files.getIWADCount(); i++) {
+                            jComboBoxIwads.addItem(files.iwadsNames[i]);
+                        }
+                        jComboBoxIwads.setSelectedIndex(jComboBoxIwads.getItemCount()-1);
+
+
+                        misc.compat[0] = Integer.parseInt(config[2]);
+                        misc.compat[1] = Integer.parseInt(config[3]);
+                        misc.compatUpdate(misc.compat[0], 1);
+                        misc.compatUpdate(misc.compat[1], 2);
+
+
+                    }catch (NumberFormatException ex) {
+                        Printer.print("Error parse config: "+ex);
+                    }
+                }
+
+            }
+
+        });
 
         jListPwads = new JList<File>(files.pwad);
         jListPwads.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -253,6 +298,8 @@ public class DoomLauncher implements Observer, Constants, Runnable {
 
         //buttons
         JPanel buttonsJPanel = new JPanel();
+        buttonsJPanel.add(jButtonLoad);
+        buttonsJPanel.add(jButtonsSave);
         buttonsJPanel.add(jButtonLaunch);
         buttonsJPanel.add(jButtonCommandLine);
         buttonsJPanel.add(jButtonClose);
@@ -556,6 +603,7 @@ public class DoomLauncher implements Observer, Constants, Runnable {
                 }
             });
 
+
             DLJCheckBox[] dmFlagsCheckBoxses = new DLJCheckBox[3];
             int dmFlagCheckBoxId = 3;
             for (int i = 0; i < dmFlagsCheckBoxses.length; i++) {
@@ -633,6 +681,30 @@ public class DoomLauncher implements Observer, Constants, Runnable {
 
         }
 
+        public void compatUpdate(int c, int mode) {
+            if (mode==1) {
+                int[] translatedFlags = translateFlag(c);
+                for (int i = 0; i < COMPAT_SIZE; i++) {
+                    if (translatedFlags[i] == 1) {
+                        compatFlags.compatCheckBox[i].setSelected(true);
+                    } else {
+                        compatFlags.compatCheckBox[i].setSelected(false);
+                    }
+                }
+            }
+            if (mode==2) {
+                int[] translatedFlags = translateFlag(c);
+                for (int i = 0; i < COMPAT2_SIZE; i++) {
+                    if (translatedFlags[i] == 1) {
+                        compatFlags2.compatCheckBox[i].setSelected(true);
+                    } else {
+                        compatFlags2.compatCheckBox[i].setSelected(false);
+                    }
+                }
+
+            }
+
+        }
         public void init() {
             for (int i = 0; i < dmFlags.length; i++) {
                 dmFlags[i] = 0;

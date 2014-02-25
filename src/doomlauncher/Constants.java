@@ -32,6 +32,8 @@ public interface Constants{
     public static final int FILE_CHOOSE_PWAD=2;
     public static final int FILE_CHOOSE_ENGINE=3;
     public static final int FILE_ADD_ENGINE=4;
+    public static final int FILE_SAVE=5;
+    public static final int FILE_LOAD=6;
 
 
     public static final int DMFLAGS_NUM=3;

@@ -12,31 +12,30 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 /**
  *
  * @author loludaed
  */
 public class Files implements Constants{
-    
+
     public File defaultFolder=new File("/");
     public File[] allFiles=defaultFolder.listFiles();
     private int iwadCount=0;
-    
-     
+
+
     public File[] iwads;
     public String[] iwadsNames;
-    
+
     public File[] pwad;
     private int pwadCount=0;
-    
-    
+
+
     public File[] engine;
     public String[] engineName;
-    
-    
- 
+
+
+
 
     public Files() {
         if (new File(IWAD_FOLDER_CONFIG).exists()) {
@@ -45,39 +44,40 @@ public class Files implements Constants{
             setConfig("/", IWAD_FOLDER_CONFIG,0);
         }
         if (new File(PWAD_FOLDER_CONFIG).exists()){
-            
+
         }else{
             setConfig("/", PWAD_FOLDER_CONFIG,0);
         }
         if (new File(ENGINE_FOLDER_CONFIG).exists()){
-           
+
         }else{
              Printer.print(ENGINE_FOLDER_CONFIG+" Not exist");
              Printer.print("Creating new defult "+ENGINE_FOLDER_CONFIG);
              writeConfig(ENGINE_FOLDER_CONFIG, ENGINE);
         }
-            
-      
-        
+
+
+
         initEngine();
         initIWADS();
         initPWADS();
      }
-    
+
     public void updateEngines(){
         engineName=new String[engine.length];
             for (int i = 0; i < engine.length; i++) {
                 engineName[i]=engine[i].getName();
             }
     }
-    
+
       public void initEngine() {
         try {
+            Printer.print("Reading config: " + ENGINE_FOLDER_CONFIG);
             String config1String = readConfig(ENGINE_FOLDER_CONFIG, 1);
             int config1 = Integer.parseInt(config1String);
             engine = new File[config1];
             int stringId = 2;
-            Printer.print("Reading config: " + ENGINE_FOLDER_CONFIG);
+
             for (int i = 0; i < config1; i++) {
                 engine[i] = new File(readConfig(ENGINE_FOLDER_CONFIG, stringId));
                 stringId++;
@@ -93,7 +93,7 @@ public class Files implements Constants{
             Printer.print("Creating new defult " + ENGINE_FOLDER_CONFIG);
             writeConfig(ENGINE_FOLDER_CONFIG, ENGINE);
             initEngine();
-            
+
         }
 
     }
@@ -121,8 +121,8 @@ public class Files implements Constants{
         }
         return writeConfig(confName, strings);
     }
-    
-    
+
+
     public String readConfig(String confName, Integer stringNum){
         File conf=new File(confName);
         String buff;
@@ -131,8 +131,9 @@ public class Files implements Constants{
             try {
                 for (int i = 1; i <= stringNum; i++) {
                     buff=bf.readLine();
-                    if(i==stringNum)
-                        return buff;
+                    if(i==stringNum){
+                        Printer.print("Read string "+stringNum+" from config: "+confName);
+                        return buff;}
                 }
             } catch (IOException ex) {
                 Printer.print("Error read config "+ex);
@@ -142,10 +143,10 @@ public class Files implements Constants{
         }
         return null;
     }
-    
+
     public void setConfig(String path, String name, Integer str){
-    
-        
+
+
         File defaultFolderConfig=new File(name);
         try {
             FileWriter defaultFolderConfigWriter=new FileWriter(defaultFolderConfig);
@@ -165,14 +166,14 @@ public class Files implements Constants{
             defaultFolderConfigWriter.flush();
             defaultFolderConfigWriter.close();
         } catch (IOException ex) {
-            
+
         }
-        
+
     }
-    
+
     public void addEngine(String path){
         int engines=engine.length+1;
-        File[] buff=engine; 
+        File[] buff=engine;
         engine=new File[engines];
         for (int i = 0; i < buff.length; i++) {
            engine[i]=buff[i];
@@ -181,27 +182,27 @@ public class Files implements Constants{
         updateEngines();
         if(writeConfig(ENGINE_FOLDER_CONFIG, engine)){
             Printer.print("Sucesfully added engine: "+path);
-           
+
         }else{
              Printer.print("Can't add engine: "+path);
         }
-        
-        
+
+
     }
-    
+
      public void changeEngine(int id, String path){
         engine[id]=new File(path);
         engineName[id]=engine[id].getName();
         if(writeConfig(ENGINE_FOLDER_CONFIG, engine)){
             Printer.print("Sucesfully changed engine: "+path);
-           
+
         }else{
              Printer.print("Can't change engine: "+path);
         }
-        
-        
+
+
     }
-    
+
     public String readIWADConfig(String name,int  id, int mode){
         File conf=new File(name);
         String buff;
@@ -218,17 +219,37 @@ public class Files implements Constants{
                             return buff;
                         }
                     }
-                
+
             } catch (IOException ex) {
-                
+
             }
         } catch (FileNotFoundException ex) {
             Printer.print(ex.toString());
         }
         return null;
     }
-    
-    
+
+    public void addIwad(String iwad, String prefix){
+        File[] iwadsBuff = iwads;
+        String[] iwadsNamesBuff = iwadsNames;
+
+        for (int i = 0; i < IWAD_NAMES.length; i++) {
+            File iwadFile = new File(iwad);
+            if (IWAD_NAMES[i].equals(iwadFile.getName().toLowerCase()))
+                iwadCount++;
+        }
+        iwads = new File[iwadCount];
+        iwadsNames = new String[iwadCount];
+
+        for (int j = 0; j < iwadsBuff.length; j++) {
+            iwads[j] = iwadsBuff[j];
+            iwadsNames[j] = iwadsNamesBuff[j];
+        }
+        iwads[iwadCount - 1] = new File(iwad);
+        iwadsNames[iwadCount - 1] = prefix+iwads[iwadCount-1].getName();
+
+    }
+
     public void initIWADS(){
         int iwadID=0;
         for (int i = 0; i < IWAD_NAMES.length; i++) {
@@ -244,7 +265,7 @@ public class Files implements Constants{
             for (int i = 0; i < IWAD_NAMES.length; i++) {
                 for (int j = 0; j < allFiles.length; j++) {
                     if (IWAD_NAMES[i].equals(allFiles[j].getName().toLowerCase())) {
-                        
+
                         iwads[iwadID] = allFiles[j];
                         iwadsNames[iwadID] = iwads[iwadID].getName().toLowerCase();
                         iwadID++;
@@ -256,15 +277,15 @@ public class Files implements Constants{
             iwads=new File[0];
             iwadsNames=new String[0];
         }
-        
-        
-    
+
+
+
     }
 
     private void initPWADS() {
         pwad=new File[pwadCount];
     }
-    
+
     public int getPWADCount(){
         return pwadCount;
     }
@@ -274,7 +295,7 @@ public class Files implements Constants{
     public void IWADCountReset(){
         iwadCount=0;
     }
-    
+
     public int PWADSelected(){
         if (IWADSelected()==2 && getPWADCount()>0) {
             return getPWADCount()+1;
@@ -289,7 +310,7 @@ public class Files implements Constants{
             return 0;
         }
     }
-    
+
     public void addPWADS(File[] file){
         int id=0;
         pwadCount+=file.length;
@@ -302,11 +323,11 @@ public class Files implements Constants{
             pwad[i]=file[id];
             id++;
         }
-        
+
         //removeEqalsPwad();
-        
+
     }
-    
+
     public void removeEqalsPwad(){
         for (int i = 0; i < pwad.length; i++) {
             for (int j = i+1; j < pwad.length; j++) {
@@ -316,42 +337,42 @@ public class Files implements Constants{
             }
         }
     }
-    
+
     public void removePwad(int id){
         if (id > -1) {
-            
+
             File[] buffer1 = new File[id];
             File[] buffer2 = new File[pwadCount-(id+1)];
-            
-            
+
+
             int newStart=id+1;
             //Printer.print(newStart);
             for (int i = 0; i < buffer1.length; i++) {
-               buffer1[i] = pwad[i]; 
+               buffer1[i] = pwad[i];
             }
-            
+
             for (int i = 0; i < buffer2.length; i++) {
                buffer2[i] = pwad[newStart];
                newStart++;
-              
+
             }
-            
-          
+
+
             pwadCount=0;
             initPWADS();
             addPWADS(buffer1);
             addPWADS(buffer2);
         }
-        
+
         if(id==-666){
             pwadCount=0;
             initPWADS();
         }
-        
-            
-        
+
+
+
     }
-     
-    
-    
+
+
+
 }
