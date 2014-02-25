@@ -31,6 +31,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -48,6 +49,7 @@ public class DoomLauncher implements Observer, Constants, Runnable {
      * @param args the command line arguments
      */
     public ProcessBuilder processBuilder;
+    public static boolean LAF = false;
 
     JFrame frame;
     JTextArea jTextArea;
@@ -63,7 +65,7 @@ public class DoomLauncher implements Observer, Constants, Runnable {
     String[] engines = ENGINE;
 
     FileChoose fileChoose;
-    Files files;
+    static Files files;
 
     ProcessBuilderD processBuilderD;
 
@@ -77,12 +79,12 @@ public class DoomLauncher implements Observer, Constants, Runnable {
 
     public DoomLauncher() {
         for (int i = 0; i < compat.length; i++) {
-            compat[i]=0;
+            compat[i] = 0;
         }
 
         t = new Thread(this);
 
-        files = new Files();
+
         engines = files.engineName;
 
         frame = new JFrame("Doom Launcher");
@@ -192,6 +194,27 @@ public class DoomLauncher implements Observer, Constants, Runnable {
             }
 
         });
+        JButton jButtonSwitchLAF = new JButton("Switch LAF");
+        jButtonSwitchLAF.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String lafString;
+                if (!LAF) {
+                    lafString ="System";
+                    LAF=false;
+                } else {
+                    lafString = "Nimbus";
+                    LAF=true;
+                }
+                files.writeConfig("laf", lafString);
+                Printer.print("You chose "+lafString+" laf");
+                Printer.print("Need restart DoomLauncher");
+                popOut("You chose "+lafString+" laf\n"+
+                        "Need restart DoomLauncher");
+
+
+            }
+
+        });
         JButton jButtonClose = new JButton("Close");
         jButtonClose.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -203,7 +226,7 @@ public class DoomLauncher implements Observer, Constants, Runnable {
         JButton jButtonsSave = new JButton("Save");
         jButtonsSave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fileChoose=new FileChoose(files, FILE_SAVE, jComboBoxEngines.getSelectedIndex(), jComboBoxIwads.getSelectedIndex(), files.pwad, misc.compat);
+                fileChoose = new FileChoose(files, FILE_SAVE, jComboBoxEngines.getSelectedIndex(), jComboBoxIwads.getSelectedIndex(), files.pwad, misc.compat);
 
             }
 
@@ -214,7 +237,7 @@ public class DoomLauncher implements Observer, Constants, Runnable {
         JButton jButtonLoad = new JButton("Load");
         jButtonLoad.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fileChoose=new FileChoose(files, FILE_LOAD);
+                fileChoose = new FileChoose(files, FILE_LOAD);
                 if (fileChoose.succesfullyReadConfig) {
                     try {
                         String[] config = fileChoose.configString;
@@ -227,33 +250,29 @@ public class DoomLauncher implements Observer, Constants, Runnable {
                         for (int i = 0; i < files.getIWADCount(); i++) {
                             jComboBoxIwads.addItem(files.iwadsNames[i]);
                         }
-                        jComboBoxIwads.setSelectedIndex(jComboBoxIwads.getItemCount()-1);
-
+                        jComboBoxIwads.setSelectedIndex(jComboBoxIwads.getItemCount() - 1);
 
                         misc.compat[0] = Integer.parseInt(config[2]);
                         misc.compat[1] = Integer.parseInt(config[3]);
                         misc.compatUpdate(misc.compat[0], 1);
                         misc.compatUpdate(misc.compat[1], 2);
-                        File[] pwadsFiles=new File[Integer.parseInt(config[4])];
-                        int confId=5;
+                        File[] pwadsFiles = new File[Integer.parseInt(config[4])];
+                        int confId = 5;
                         for (int i = 0; i < pwadsFiles.length; i++) {
-                            pwadsFiles[i]=new File(config[confId]);
+                            pwadsFiles[i] = new File(config[confId]);
                             confId++;
                         }
                         files.addPWADS(pwadsFiles);
                         jListPwads.setListData(files.pwad);
 
-
-                    }catch (NumberFormatException ex) {
-                        Printer.print("Error parse config: "+ex);
+                    } catch (NumberFormatException ex) {
+                        Printer.print("Error parse config: " + ex);
                     }
                 }
 
             }
 
         });
-
-
 
         //panel pwads
         JPanel pwadsJPanel = new JPanel();
@@ -312,6 +331,7 @@ public class DoomLauncher implements Observer, Constants, Runnable {
         buttonsJPanel.add(jButtonLaunch);
         buttonsJPanel.add(jButtonCommandLine);
         buttonsJPanel.add(jButtonClose);
+        buttonsJPanel.add(jButtonSwitchLAF);
 
         jTabbedPane = new JTabbedPane();
         jTabbedPane.addTab("General", bigJPanel);
@@ -398,13 +418,17 @@ public class DoomLauncher implements Observer, Constants, Runnable {
 
     }
 
+      public void popOut(String msg) {
+        JOptionPane.showMessageDialog(frame, msg, "Info", JOptionPane.INFORMATION_MESSAGE);
+
+    }
+
     public void commadLineShow() {
         JDialog commandLineJFrame = new JDialog(frame, "Command Line");
 
         commandLineJFrame.setMinimumSize(new Dimension(WIDTH / 2, HEIGHT / 2));
         commandLineJFrame.setPreferredSize(new Dimension(WIDTH / 2, HEIGHT / 2));
         commandLineJFrame.setLocationRelativeTo(frame);
-
 
         JTextArea commandLineJTextArea = new JTextArea();
         commandLineJTextArea.setLineWrap(true);
@@ -418,20 +442,51 @@ public class DoomLauncher implements Observer, Constants, Runnable {
 
     }
 
-    public static void main(String[] args) {
+    public static void setNimbusLookAndFill() {
+        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 
-        Printer.print("Hello!");
-        try {
-            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-
-                if ("Nimbus".equals(info.getName())) {
+            if ("Nimbus".equals(info.getName())) {
+                try {
                     UIManager.setLookAndFeel(info.getClassName());
+                    Printer.print("Was set Nimbus");
+
                     break;
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                    Printer.print("Cant set laf: "+ex);
                 }
             }
-        } catch (Exception e) {
+        }
+    }
+
+    public static void setSystemLookAndFill() {
+        try {
+
+             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+              Printer.print("Was set System");
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+            Printer.print("Cant set laf: "+e);
+        }
+    }
+
+    public static void main(String[] args) {
+        files = new Files();
+        if (!new  File("laf").exists()) {
+
+            files.writeConfig("laf", "Nimbus");
+        }
+        String s=files.readConfig("laf", 2);
+        if (s.equals("Nimbus")) {
+
+                setNimbusLookAndFill();
+                LAF=false;
+
 
         }
+        if (s.equals("System")) {
+            setSystemLookAndFill();
+            LAF=true;
+        }
+        Printer.print("Hello!");
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -564,9 +619,9 @@ public class DoomLauncher implements Observer, Constants, Runnable {
                 }
 
                 public void insertUpdate(DocumentEvent e) {
-                    int[] translatedFlags=translateFlag(compatJTextFields[0].getText());
+                    int[] translatedFlags = translateFlag(compatJTextFields[0].getText());
                     for (int i = 0; i < compatFlags.compatCheckBox.length; i++) {
-                        if (translatedFlags[i]==1) {
+                        if (translatedFlags[i] == 1) {
                             compatFlags.compatCheckBox[i].setSelected(true);
                         } else {
                             compatFlags.compatCheckBox[i].setSelected(false);
@@ -576,9 +631,9 @@ public class DoomLauncher implements Observer, Constants, Runnable {
                 }
 
                 public void removeUpdate(DocumentEvent e) {
-                    int[] translatedFlags=translateFlag(compatJTextFields[0].getText());
+                    int[] translatedFlags = translateFlag(compatJTextFields[0].getText());
                     for (int i = 0; i < compatFlags.compatCheckBox.length; i++) {
-                        if (translatedFlags[i]==1) {
+                        if (translatedFlags[i] == 1) {
                             compatFlags.compatCheckBox[i].setSelected(true);
                         } else {
                             compatFlags.compatCheckBox[i].setSelected(false);
@@ -592,9 +647,9 @@ public class DoomLauncher implements Observer, Constants, Runnable {
                 }
 
                 public void insertUpdate(DocumentEvent e) {
-                    int[] translatedFlags=translateFlag(compatJTextFields[1].getText());
+                    int[] translatedFlags = translateFlag(compatJTextFields[1].getText());
                     for (int i = 0; i < compatFlags2.compatCheckBox.length; i++) {
-                        if (translatedFlags[i]==1) {
+                        if (translatedFlags[i] == 1) {
                             compatFlags2.compatCheckBox[i].setSelected(true);
                         } else {
                             compatFlags2.compatCheckBox[i].setSelected(false);
@@ -603,9 +658,9 @@ public class DoomLauncher implements Observer, Constants, Runnable {
                 }
 
                 public void removeUpdate(DocumentEvent e) {
-                    int[] translatedFlags=translateFlag(compatJTextFields[1].getText());
+                    int[] translatedFlags = translateFlag(compatJTextFields[1].getText());
                     for (int i = 0; i < COMPAT2_SIZE; i++) {
-                        if (translatedFlags[i]==1) {
+                        if (translatedFlags[i] == 1) {
                             compatFlags2.compatCheckBox[i].setSelected(true);
                         } else {
                             compatFlags2.compatCheckBox[i].setSelected(false);
@@ -613,7 +668,6 @@ public class DoomLauncher implements Observer, Constants, Runnable {
                     }
                 }
             });
-
 
             DLJCheckBox[] dmFlagsCheckBoxses = new DLJCheckBox[3];
             int dmFlagCheckBoxId = 3;
@@ -693,7 +747,7 @@ public class DoomLauncher implements Observer, Constants, Runnable {
         }
 
         public void compatUpdate(int c, int mode) {
-            if (mode==1) {
+            if (mode == 1) {
                 int[] translatedFlags = translateFlag(c);
                 for (int i = 0; i < COMPAT_SIZE; i++) {
                     if (translatedFlags[i] == 1) {
@@ -703,7 +757,7 @@ public class DoomLauncher implements Observer, Constants, Runnable {
                     }
                 }
             }
-            if (mode==2) {
+            if (mode == 2) {
                 int[] translatedFlags = translateFlag(c);
                 for (int i = 0; i < COMPAT2_SIZE; i++) {
                     if (translatedFlags[i] == 1) {
@@ -716,6 +770,7 @@ public class DoomLauncher implements Observer, Constants, Runnable {
             }
 
         }
+
         public void init() {
             for (int i = 0; i < dmFlags.length; i++) {
                 dmFlags[i] = 0;
@@ -768,13 +823,12 @@ public class DoomLauncher implements Observer, Constants, Runnable {
         }
 
         public int[] translateFlag(String flagValue) {
-                try {
-                    return translateFlag(Integer.parseInt(flagValue));
-                } catch (NumberFormatException e) {
-                    System.out.println(e);
-                    return translateFlag(0);
-                }
-
+            try {
+                return translateFlag(Integer.parseInt(flagValue));
+            } catch (NumberFormatException e) {
+                System.out.println(e);
+                return translateFlag(0);
+            }
 
         }
 
@@ -794,10 +848,10 @@ public class DoomLauncher implements Observer, Constants, Runnable {
             updateDmflags();
 
             int id = 0;
-            if (skillJComboBox.getSelectedIndex()!=0) {
-                miscArgs[0] = "-skill " + (skillJComboBox.getSelectedIndex()-1);
-            }else{
-                miscArgs[0]= "";
+            if (skillJComboBox.getSelectedIndex() != 0) {
+                miscArgs[0] = "-skill " + (skillJComboBox.getSelectedIndex() - 1);
+            } else {
+                miscArgs[0] = "";
             }
 
             if (mapJTextField.getText().length() > 0) {

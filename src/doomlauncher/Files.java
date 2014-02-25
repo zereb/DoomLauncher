@@ -122,6 +122,11 @@ public class Files implements Constants{
         }
         return writeConfig(confName, strings);
     }
+     public boolean writeConfig(String confName, String s){
+        String[] ss=new String[1];
+        ss[0]=s;
+        return writeConfig(confName, ss);
+    }
 
 
     public String readConfig(String confName, Integer stringNum){
