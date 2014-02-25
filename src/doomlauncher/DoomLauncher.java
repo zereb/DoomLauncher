@@ -534,23 +534,23 @@ public class DoomLauncher implements Observer, Constants, Runnable {
                 }
 
                 public void insertUpdate(DocumentEvent e) {
-                    int[] translatedFlags=translateFlag(compatJTextFields[0].getText());
-                    for (int i = 0; i < compatFlags.compatCheckBox.length; i++) {
+                    int[] translatedFlags=translateFlag(compatJTextFields[1].getText());
+                    for (int i = 0; i < compatFlags2.compatCheckBox.length; i++) {
                         if (translatedFlags[i]==1) {
-                            compatFlags.compatCheckBox[i].setSelected(true);
+                            compatFlags2.compatCheckBox[i].setSelected(true);
                         } else {
-                            compatFlags.compatCheckBox[i].setSelected(false);
+                            compatFlags2.compatCheckBox[i].setSelected(false);
                         }
                     }
                 }
 
                 public void removeUpdate(DocumentEvent e) {
-                   int[] translatedFlags=translateFlag(compatJTextFields[0].getText());
-                    for (int i = 0; i < compatFlags.compatCheckBox.length; i++) {
+                    int[] translatedFlags=translateFlag(compatJTextFields[1].getText());
+                    for (int i = 0; i < COMPAT2_SIZE; i++) {
                         if (translatedFlags[i]==1) {
-                            compatFlags.compatCheckBox[i].setSelected(true);
+                            compatFlags2.compatCheckBox[i].setSelected(true);
                         } else {
-                            compatFlags.compatCheckBox[i].setSelected(false);
+                            compatFlags2.compatCheckBox[i].setSelected(false);
                         }
                     }
                 }
@@ -689,7 +689,7 @@ public class DoomLauncher implements Observer, Constants, Runnable {
                     return translateFlag(Integer.parseInt(flagValue));
                 } catch (NumberFormatException e) {
                     System.out.println(e);
-                    return null;
+                    return translateFlag(0);
                 }
 
 

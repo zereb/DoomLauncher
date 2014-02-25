@@ -23,18 +23,19 @@ import javax.swing.JTextArea;
 
 public class CompatFlags extends JPanel implements Constants{
 
-    DLJCheckBox compatCheckBox;
+    DLJCheckBox[] compatCheckBox;
     JTextArea discriptionArea;
     String[] descriptios;
     public CompatFlags(Misc misc,String[] names, String[] descriptions, int compat) {
         super();
+        compatCheckBox = new DLJCheckBox[COMPAT_SIZES[compat]];
         this.descriptios=descriptions;
         setLayout(new BorderLayout());
         JPanel compatCheckBoxes=new JPanel();
         compatCheckBoxes.setLayout(new GridLayout(10,2));
         for (int i = 0; i < COMPAT_SIZES[compat]; i++) {
-            compatCheckBox=new DLJCheckBox(names[i], misc, i, DLJCCHECK_COMPAT,compat);
-            compatCheckBoxes.add(compatCheckBox);
+            compatCheckBox[i]=new DLJCheckBox(names[i], misc, i, DLJCCHECK_COMPAT,compat);
+            compatCheckBoxes.add(compatCheckBox[i]);
         }
 
 
