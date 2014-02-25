@@ -175,10 +175,15 @@ public class Files implements Constants{
         int engines=engine.length+1;
         File[] buff=engine;
         engine=new File[engines];
+        boolean original=false;
         for (int i = 0; i < buff.length; i++) {
            engine[i]=buff[i];
+            if (!path.equals(engine[i].getAbsolutePath())) {
+                original=true;
+            }
         }
-        engine[engines-1]=new File(path);
+        if (original)
+            engine[engines-1]=new File(path);
         updateEngines();
         if(writeConfig(ENGINE_FOLDER_CONFIG, engine)){
             Printer.print("Sucesfully added engine: "+path);
